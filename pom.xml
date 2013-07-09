@@ -4,13 +4,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>edu.isi.bmkeg</groupId>
 	<artifactId>triageServer</artifactId>
-	<version>0.1.4-SNAPSHOT</version>
+	<version>1.1.3-SNAPSHOT</version>
 	<packaging>war</packaging>
 
 	<parent>
 		<groupId>edu.isi.bmkeg</groupId>
 		<artifactId>bmkeg-parent</artifactId>
-		<version>0.1.0-SNAPSHOT</version>
+		<version>1.1.3-SNAPSHOT</version>
 		<relativePath>../bmkeg-parent</relativePath>
 	</parent>
 
@@ -29,9 +29,6 @@
 		<htmlwrapper.flashplayer.revision>0</htmlwrapper.flashplayer.revision>
 
 		<wrapperTemplate.dir>html-wrapper-template</wrapperTemplate.dir>
-		
-    	<flexmojos.version>4.2-beta</flexmojos.version>
-	  	<flex.version>4.5.0.20967</flex.version>
 	</properties>
 	
 	<build>
@@ -138,9 +135,10 @@
 								<artifactItem>
 									<groupId>edu.isi.bmkeg</groupId>
 									<artifactId>triage</artifactId>
+									<classifier>mysql</classifier>
 									<type>zip</type>
 									<outputDirectory>${project.build.outputDirectory}</outputDirectory>
-									<destFileName>triage_VPDMf.zip</destFileName>
+									<destFileName>triage-mysql.zip</destFileName>
 								</artifactItem>
 							</artifactItems>
 						</configuration>
@@ -169,7 +167,7 @@
 		<dependency>
 			<groupId>edu.isi.bmkeg</groupId>
 			<artifactId>triage</artifactId>
-			<version>0.1.4-SNAPSHOT</version>
+			<classifier>mysql</classifier>
 			<type>zip</type>
 		</dependency>
 
@@ -178,7 +176,6 @@
 		<dependency>
 			<groupId>edu.isi.bmkeg</groupId>
 			<artifactId>skmTriage</artifactId>
-			<version>0.1.4-SNAPSHOT</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>digitalLibrary-jpa</artifactId>
@@ -214,125 +211,77 @@
 		<dependency>
 			<groupId>edu.isi.bmkeg</groupId>
 			<artifactId>triage-services</artifactId>
-			<version>0.1.4-SNAPSHOT</version>
 		</dependency>
 		
 		<dependency>
 			<groupId>edu.isi.bmkeg</groupId>
 			<artifactId>triageClientApp</artifactId>
-			<version>0.1.4-SNAPSHOT</version>
 			<type>swf</type>
-			<exclusions>
-				<exclusion>
-					<artifactId>flex-framework</artifactId>
-					<groupId>com.adobe.flex.framework</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>playerglobal</artifactId>
-					<groupId>com.adobe.flex.framework</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>triageClientComponents</artifactId>
-					<groupId>edu.isi.bmkeg</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>robotlegs-framework</artifactId>
-					<groupId>org.robotlegs</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>robotlegs-utilities-Modular</artifactId>
-					<groupId>org.robotlegs</groupId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
-			<version>${spring.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
-			<version>${spring.version}</version>
 		</dependency>
 
 
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
-			<version>${spring.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
-			<version>${spring.version}</version>
 		</dependency>
 
 		<!-- Spring Framework Security -->
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-web</artifactId>
-			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-core</artifactId>
-			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-config</artifactId>
-			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-taglibs</artifactId>
-			<version>${spring.version}</version>
 		</dependency>
 
 		<!-- Spring Flex -->
 		<dependency>
 			<groupId>com.adobe.blazeds</groupId>
 			<artifactId>blazeds-common</artifactId>
-			<version>${blazeds.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.adobe.blazeds</groupId>
 			<artifactId>blazeds-core</artifactId>
-			<version>${blazeds.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.adobe.blazeds</groupId>
 			<artifactId>blazeds-remoting</artifactId>
-			<version>${blazeds.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.flex</groupId>
 			<artifactId>spring-flex-core</artifactId>
-			<version>${spring-flex.version}</version>
-		</dependency>
-
-		<!-- Logging -->
-
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.8.1</version>
-			<type>jar</type>
-			<scope>test</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
-			<version>${spring.version}</version>
-			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
 
@@ -346,30 +295,5 @@
 		</dependency>
 
 	</dependencies>
-
-  <pluginRepositories>
-    <pluginRepository>
-      <id>flex-mojos-repository</id>
-      <url>http://repository.sonatype.org/content/groups/flexgroup/</url>
-	  <releases> 
-		<enabled>true</enabled> 
-	  </releases>
-      <snapshots> 
-		<enabled>true</enabled>
-	  </snapshots>
-    </pluginRepository>
-    <pluginRepository>
-        <id>flexpmd.opensource.adobe</id>
-	    <releases>
-	        <enabled>true</enabled>
-    	    </releases>
-	    <snapshots>
-	        <enabled>false</enabled>
-	    </snapshots>
-	    <name>FlexPMD repository on opensource.adobe.com</name>
-	    <url>http://opensource.adobe.com/svn/opensource/flexpmd/maven-repository/release/</url>	
-    </pluginRepository>
-
-  </pluginRepositories>
 
 </project>
