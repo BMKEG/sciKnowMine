@@ -17,8 +17,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import edu.isi.bmkeg.digitalLibrary.model.citations.LiteratureCitation;
+import edu.isi.bmkeg.digitalLibrary.model.qo.citations.LiteratureCitation_qo;
 import edu.isi.bmkeg.ftd.dao.FtdDao;
 import edu.isi.bmkeg.ftd.model.FTD;
+import edu.isi.bmkeg.ftd.model.qo.FTD_qo;
 import edu.isi.bmkeg.vpdmf.model.instances.LightViewInstance;
 
 @Controller
@@ -49,11 +51,11 @@ public class PdfServer {
 			return new ResponseEntity<byte []>(HttpStatus.BAD_REQUEST);
 		}
 				
-		FTD qFtd = new FTD();
-		LiteratureCitation ac = new LiteratureCitation();
+		FTD_qo qFtd = new FTD_qo();
+		LiteratureCitation_qo ac = new LiteratureCitation_qo();
 		qFtd.setCitation(ac);
-		ac.setVpdmfId(vpdmfId);
-		List<LightViewInstance> l = this.ftdDao.listFullTextDocument(qFtd);
+		ac.setVpdmfId(String.valueOf(vpdmfId));
+		List<LightViewInstance> l = this.ftdDao.listFTD(qFtd);
 		
 		if( l.size() == 0 ) {
 			return new ResponseEntity<byte []>(HttpStatus.NOT_FOUND);
