@@ -115,6 +115,7 @@
 			            		${project.build.directory}/${project.build.finalName}
 			            	</webappDirectory>
 			            	<stripVersion>true</stripVersion>
+			            	<useFinalName>false</useFinalName>
 			            </configuration>
 			        </execution>
 			        
