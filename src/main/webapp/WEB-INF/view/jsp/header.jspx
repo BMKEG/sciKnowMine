@@ -1,0 +1,9 @@
+<div id="header" xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+	<c:url value="/images/favicon.ico" var="iconImage" />
+	<c:url value="/style/app.css" var="appStyle" />
+
+	<link rel="shortcut icon" href="${iconImage}" type="image/x-icon" />
+	<link th:href="${iconImage}" rel="stylesheet" />
+	
+</div>

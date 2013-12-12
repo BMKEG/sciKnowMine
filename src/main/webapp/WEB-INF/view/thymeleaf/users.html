@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head th:include="thymeleaf/layout :: headerFragment">
+    </head>
+    
+    <body> 
+		
+		<div th:include="thymeleaf/layout :: menuFragment">
+		</div>
+		<div th:if="${#lists.isEmpty(users)}">
+			Table is empty.
+		</div>
+	 	<div th:if="${not #lists.isEmpty(users)}">
+	    	<table>
+			    <thead>
+			        <tr>
+						<th> First Name </th>
+						<th> Last name </th>
+			        </tr>
+			    </thead>
+			    <tbody>		    
+			        <tr th:each="user : ${users}">
+			            <td th:text="${user.firstName}">John</td>
+			            <td th:text="${user.lastName}">Smith</td>
+			        </tr>
+			    </tbody>
+			</table> 
+		</div>
+    </body>
+</html>

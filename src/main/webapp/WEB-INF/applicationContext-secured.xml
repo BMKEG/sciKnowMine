@@ -1,31 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:sec="http://www.springframework.org/schema/security"
 	xsi:schemaLocation="http://www.springframework.org/schema/web-services http://www.springframework.org/schema/web-services/web-services-1.5.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd">
 
-    <!--
-		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
-		Security
-		- just placeholders for now.
-		- see: http://static.springsource.org/spring-security/site/docs/3.0.x/reference/ns-config.html#ns-auth-manager
-		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	-->
- 	<sec:http entry-point-ref="entrypoint">
- 		<sec:anonymous enabled="false"/>	
- 	</sec:http>
- 	 	
- 	 <bean id="entrypoint"
- 	 		class="org.springframework.flex.security3.FlexAuthenticationEntryPoint" />
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Security - see: http://static.springsource.org/spring-security/site/docs/3.1.x/reference/ns-config.html#ns-auth-manager 
+		- working example: http://howtodoinjava.com/2013/04/16/custom-userdetailsservice-example-for-spring-3-security/ 
+		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 
-    <sec:authentication-manager>
+	<!-- <sec:authentication-manager alias="authenticationManager"> <sec:authentication-provider 
+		ref="daoAuthenticationProvider" /> </sec:authentication-manager> -->
+	<sec:authentication-manager alias="authenticationManager">
 		<sec:authentication-provider>
-			<sec:user-service id="userDetailsService" properties="#{bmkegProperties.homeDirectory}/users.properties"/>
+			<sec:user-service>
+				<sec:user name="user" password="pass" authorities="ROLE_USER" />
+			</sec:user-service>
 		</sec:authentication-provider>
 	</sec:authentication-manager>
+
+	<bean id="loggerListener"
+		class="org.springframework.security.authentication.event.LoggerListener" />
+
+	<sec:http auto-config="true">
+		<sec:intercept-url pattern="/**" access="ROLE_USER" />
+	</sec:http>
+
+<!-- 	<bean id="daoAuthenticationProvider"
+		class="org.springframework.security.authentication.dao.DaoAuthenticationProvider">
+		<property name="userDetailsService" ref="vpdmfUserService" />
+	</bean> -->
 
 </beans>

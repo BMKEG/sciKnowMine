@@ -1,0 +1,29 @@
+<div xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+	<c:url value="/css/stsm.css" var="stsm_css" />
+	<c:url value="/css/main.css" var="main_css" />
+	<c:url value="/css/app.css" var="app_css" />
+	<c:url value="/users/all/jsp-plain.htm" var="usersPlain" />
+	<c:url value="/users/all/jsp-custom-1.htm" var="usersCustomTags" />
+	<c:url value="/users/all/jsp-custom-2.htm" var="usersCustomTagsNotEmpty" />
+	<c:url value="/users/all/jsp-tiles.htm" var="usersTiles" />
+	<c:url value="/users/all/thymeleaf.htm" var="usersThymeleaf" />
+	<c:url value="/images/SciKnowSoft_LockUp.jpg" var="headerImage1" />
+	<c:url value="/images/SciKnowSoft_OnBlue.jpg" var="headerImage2" />
+	<c:url value="/images/SciKnowSoft_OnWhite.jpg" var="headerImage3" />
+	
+	<div class="header well">
+		<img src="${headerImage3}" height="90px"/>
+		<div class="page-header">
+			<h1>${title}</h1>
+		</div>	
+		<ul>
+			<li><a href="${usersPlain}">No template</a></li>
+			<li><a href="${usersCustomTags}">Custom tags</a></li>
+			<li><a href="${usersCustomTagsNotEmpty}">Custom tags (using simple table tag)</a></li>
+			<li><a href="${usersTiles}">Apache Tiles</a></li>
+			<li><a href="${usersThymeleaf}">Thymeleaf</a></li>
+		</ul>
+	</div>
+
+</div>
