@@ -1,0 +1,19 @@
+<div id="header" xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+	<c:url value="/images/favicon.ico" var="iconImage" />
+	<c:url value="/style/app.css" var="appStyle" />
+	<c:url value="/css/app.css" var="app_css" />
+	
+	<c:url value="/index.jsp" var="index" />
+	<c:url value="/dash.jsp" var="dash" />
+	<c:url value="/skm.jsp" var="skm" />
+	
+	<c:url value="/images/SciKnowSoft_LockUp.jpg" var="sks_button_white" />
+	<c:url value="/images/SciKnowSoft_OnBlue.jpg" var="sks_banner_blue" />
+	<c:url value="/images/SciKnowSoft_OnWhite.jpg" var="sks_banner_white" />
+
+	<a href="${index}" 
+		alt="SciKnowMine: A Web Application to Support Knowledge Mining from the Scientific Literature">   	          
+    	<img src="${sks_banner_white}" height="75px"/>
+	</a>
+</div>                

@@ -10,9 +10,6 @@
 		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
 		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
-<!-- 	<context:annotation-config />
-	<mvc:annotation-driven /> 
-    
-    <context:component-scan base-package="edu.isi.bmkeg.digitalLibrary.rest" />      -->
+	<context:component-scan base-package="edu.isi.bmkeg.digitalLibrary" />
 
 </beans>

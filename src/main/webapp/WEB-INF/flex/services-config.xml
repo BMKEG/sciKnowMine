@@ -24,31 +24,6 @@
             </properties>
         </channel-definition>
 
-<!-- 
-	   <channel-definition id="my-polling-amf" class="mx.messaging.channels.AMFChannel">
-            <endpoint url="http://{server.name}:{server.port}/{context.root}/messagebroker/amfpolling" class="flex.messaging.endpoints.AMFEndpoint"/>
-            <properties>
-                <polling-enabled>true</polling-enabled>
-                <polling-interval-seconds>4</polling-interval-seconds>
-            </properties>
-        </channel-definition>
-        
-		<channel-definition id="my-longpolling-amf" class="mx.messaging.channels.AMFChannel">
-			<endpoint url="http://{server.name}:{server.port}/{context.root}/messagebroker/amflongpolling" class="flex.messaging.endpoints.AMFEndpoint"/>
-			<properties>
-				<polling-enabled>true</polling-enabled>
-				<polling-interval-seconds>5</polling-interval-seconds>
-				<wait-interval-millis>60000</wait-interval-millis>
-				<client-wait-interval-millis>1</client-wait-interval-millis>
-				<max-waiting-poll-requests>200</max-waiting-poll-requests>
-			</properties>
-		</channel-definition>        
-
-        <channel-definition id="my-streaming-amf" class="mx.messaging.channels.StreamingAMFChannel">
-            <endpoint url="http://{server.name}:{server.port}/{context.root}/messagebroker/streamingamf" class="flex.messaging.endpoints.StreamingAMFEndpoint"/>
-        </channel-definition>
- -->
-     
     </channels>
 
     <logging>
@@ -68,14 +43,6 @@
         </target>
     </logging>
     
-    <!--  <logging>
-      <target class="org.springframework.flex.core.CommonsLoggingTarget" level="All">
-      	<properties>
-      		<categoryPrefix>blazeds</categoryPrefix>
-      	</properties>
-      </target>
-  	</logging> -->
-
     <system>
         <redeploy>
             <enabled>false</enabled>

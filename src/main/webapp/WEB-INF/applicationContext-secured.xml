@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:sec="http://www.springframework.org/schema/security"
 	xsi:schemaLocation="http://www.springframework.org/schema/web-services http://www.springframework.org/schema/web-services/web-services-1.5.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
@@ -10,6 +11,10 @@
 	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Security - see: http://static.springsource.org/spring-security/site/docs/3.1.x/reference/ns-config.html#ns-auth-manager 
 		- working example: http://howtodoinjava.com/2013/04/16/custom-userdetailsservice-example-for-spring-3-security/ 
 		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+	<sec:http auto-config="true">
+		<sec:intercept-url pattern="/**" access="ROLE_ANONYMOUS,ROLE_USER" />
+	</sec:http>
 
 	<!-- <sec:authentication-manager alias="authenticationManager"> <sec:authentication-provider 
 		ref="daoAuthenticationProvider" /> </sec:authentication-manager> -->
@@ -23,10 +28,9 @@
 
 	<bean id="loggerListener"
 		class="org.springframework.security.authentication.event.LoggerListener" />
-
-	<sec:http auto-config="true">
-		<sec:intercept-url pattern="/**" access="ROLE_USER" />
-	</sec:http>
+    
+     <bean id="entryPoint" 
+        class="org.springframework.flex.security3.FlexAuthenticationEntryPoint"/> 
 
 <!-- 	<bean id="daoAuthenticationProvider"
 		class="org.springframework.security.authentication.dao.DaoAuthenticationProvider">

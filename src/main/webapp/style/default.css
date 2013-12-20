@@ -1,16 +1,15 @@
 html, body { 
-	  background-color: #e4e4e4; 
+	 background-color: #e4e4e4; 
 	 margin:0; 
      padding:0; 
-     text-align:center; 
+     text-align: left; 
 	 font: normal 15px Calibri, Trebuchet MS, Trebuchet, Tahoma, Arial, Helvetica, sans-serif;
 }
 
-
 #outer {
-	 width: 750px;
+	 width: 100%;
      background-color:#FFFFFF;
-     text-align:left;  
+     text-align: left;  
      margin-left:auto; 
      margin-right:auto; 
      border: 1px solid #648997;	 
@@ -20,11 +19,9 @@ img {
      border-color: #648997;
 }
 
-
 #header {
-	background: url(../images/header.jpg) no-repeat;
 	position:relative; 
-    height:125px;  
+    height:75px;  
     width:100%;
 }
 
@@ -45,11 +42,11 @@ img {
 }
 
 #navigation {
-	width: 750px;
-	height: 30px;
-	background: #0b333c;
+	width: 100%;
+	height: 25px;
+	background: #0D4269;
 	margin: 0 auto;
-	text-align: center;
+	text-align: left;
 }
 
 #navigation a {
@@ -69,7 +66,7 @@ img {
 
 #navigation ul li a { 
 	/* color: #b6d7dd; */
-	color: #9ebec4;
+	color: #fff;
 	font-size: 16px;
 	font-weight: bold;
 	padding: .2em .75em;
@@ -77,12 +74,12 @@ img {
 }
 
 #navigation ul li a:hover {
-	color: #fff;
+	color: #64BDC6;
 }
 
 #main_content {
-	width: 700px; 
- 	height: auto;
+	width: 100%; 
+ 	height: 100%;
 	color: #666666;
 	padding: 20px 25px;
 	margin: 0px auto;
@@ -170,38 +167,3 @@ hr {
 	text-decoration: none;      
 }
 
-.list_contents { 
-	font-size: 14px; 	
-	text-align: left; 
-	display: block; 
-	margin-left: 20px; 
-	font-family: sans-serif, verdana, helvetica;
-}
-
-.mission {
-	text-align: left;
-	display: block;
-	margin-left: 20px;
-	font-family: sans-serif, verdana, helvetica;
-	margin-right: 10px; 
-}
-
-.researcher_description {
-	text-align: left;
-	display: block;
-	margin-left: 45px;
-	font-family: sans-serif, verdana, helvetica;
-	margin-right: 10px; 
-}
-
-.hidden {
-	visibility: hidden;
-}
-
-.author {
-	font-weight: bolder;
-}
-
-.publication_name {
-	font-style: italic;
-}

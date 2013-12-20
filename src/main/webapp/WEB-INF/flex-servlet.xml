@@ -7,19 +7,12 @@
 
  	<flex:message-broker>
 		 
-<!-- 		<flex:message-service default-channels="my-streaming-amf,my-longpolling-amf,my-polling-amf" /> -->
-
  		<flex:secured> 		
- 			<flex:secured-channel channel="my-amf" access="ROLE_USER" />
+ 			<flex:secured-channel channel="my-amf" access="ROLE_USER,ROLE_ANONYMOUS" />
   			<flex:secured-channel channel="my-private-amf" access="ROLE_USER" />
   			<flex:secured-channel channel="my-secure-amf" access="ROLE_USER" />
   		</flex:secured>
 
 	</flex:message-broker>
-
-	<!-- MessageTemplate makes it easy to publish messages -->
-<!-- 
-	<bean id="defaultMessageTemplate" class="org.springframework.flex.messaging.MessageTemplate" />
-  -->
   
 </beans>

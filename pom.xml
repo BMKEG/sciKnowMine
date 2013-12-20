@@ -2,9 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>edu.isi.bmkeg</groupId>
-	<artifactId>triageServer</artifactId>
-	<version>1.1.3-SNAPSHOT</version>
+	<artifactId>sciKnowMine</artifactId>
 	<packaging>war</packaging>
 
 	<parent>
@@ -14,114 +12,93 @@
 		<relativePath>../bmkeg-parent</relativePath>
 	</parent>
 
-	<name>Triage Server</name>
 
 	<properties>
-		<!-- HTML Wrapper Template parameters  -->
+		<!-- HTML Wrapper Template parameters -->
 		<htmlwrapper.width>100%</htmlwrapper.width>
 		<htmlwrapper.height>100%</htmlwrapper.height>
 		<htmlwrapper.bgcolor>#ffffff</htmlwrapper.bgcolor>
 		<htmlwrapper.title>SciKnowMine</htmlwrapper.title>
-		<htmlwrapper.application>triageClientApp</htmlwrapper.application>
-		<htmlwrapper.swf>triageClientApp</htmlwrapper.swf>
 		<htmlwrapper.flashplayer.version.major>10</htmlwrapper.flashplayer.version.major>
 		<htmlwrapper.flashplayer.version.minor>2</htmlwrapper.flashplayer.version.minor>
 		<htmlwrapper.flashplayer.revision>0</htmlwrapper.flashplayer.revision>
 
 		<wrapperTemplate.dir>html-wrapper-template</wrapperTemplate.dir>
 	</properties>
-	
+
 	<build>
 		<finalName>${project.artifactId}</finalName>
 		<plugins>
 
-			<!-- 
-			
-				The following configuration is used in place of the  
-				flexmojos:wrapper goal which isn't working in the current context.
-				
-				It will copy the html wrapper resources which are contained in 
-				the ${wrapperTemplate.dir} directory into the webapp directory.
-				
-				While copying these resources it will expand the ${htmlwrapper.*} parameter
-				values (defined as properties above).
-				
-			 -->
+			<!-- The following configuration is used in place of the flexmojos:wrapper 
+				goal which isn't working in the current context. It will copy the html wrapper 
+				resources which are contained in the ${wrapperTemplate.dir} directory into 
+				the webapp directory. While copying these resources it will expand the ${htmlwrapper.*} 
+				parameter values (defined as properties above). -->
 			<plugin>
-			    <artifactId>maven-war-plugin</artifactId>
-	            <version>2.1.1</version>	    
-			    <configuration>
-		         <nonFilteredFileExtensions>
-		            <nonFilteredFileExtension>swf</nonFilteredFileExtension>
-		            <nonFilteredFileExtension>swc</nonFilteredFileExtension>
-		          </nonFilteredFileExtensions>
-		          <webResources>
-			            <resource>
-			                <directory>${wrapperTemplate.dir}</directory>
-			                <filtering>true</filtering>
-			            </resource>
-			        </webResources>
-			   </configuration>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.1.1</version>
+				<configuration>
+					<nonFilteredFileExtensions>
+						<nonFilteredFileExtension>swf</nonFilteredFileExtension>
+						<nonFilteredFileExtension>swc</nonFilteredFileExtension>
+					</nonFilteredFileExtensions>
+					<webResources>
+						<resource>
+							<directory>${wrapperTemplate.dir}</directory>
+							<filtering>true</filtering>
+						</resource>
+					</webResources>
+				</configuration>
 			</plugin>
-			
-			<!--  
-			
-				The following plugin is used to rapidly test the webapp
-				in jetty. 
-				
-				To start a jetty server execute the command:
-				
-					mvn jetty:run-war
-					
-				This command will generate the war file and will deploy it in 
-				a jetty server (see http://jetty.codehaus.org/jetty/maven-plugin/run-war-mojo.html). 
-				  
-			 -->
+
+			<!-- The following plugin is used to rapidly test the webapp in jetty. 
+				To start a jetty server execute the command: mvn jetty:run-war This command 
+				will generate the war file and will deploy it in a jetty server (see http://jetty.codehaus.org/jetty/maven-plugin/run-war-mojo.html). -->
 			<plugin>
 				<groupId>org.mortbay.jetty</groupId>
 				<artifactId>maven-jetty-plugin</artifactId>
 				<version>6.1.16</version>
+				<configuration>
+					<war>${basedir}/target/sciKnowMine</war>
+				</configuration>
 			</plugin>
-			
-		        <!-- 
-		        
-		        	The goal copy-flex-resources is used to package a flex client
-		        	application within the webapp directory.
-		        
-		         -->
 
-		    <plugin>
- 		        <groupId>org.sonatype.flexmojos</groupId>
-		        <artifactId>flexmojos-maven-plugin</artifactId>
- 		        <version>${flexmojos.version}</version>
-				
+			<!-- The goal copy-flex-resources is used to package a flex client application 
+				within the webapp directory. -->
+
+			<plugin>
+				<groupId>org.sonatype.flexmojos</groupId>
+				<artifactId>flexmojos-maven-plugin</artifactId>
+				<version>${flexmojos.version}</version>
+
 				<dependencies>
 					<dependency>
 						<groupId>com.adobe.flex</groupId>
-			            <artifactId>compiler</artifactId>
-			            <version>${flex.version}</version>
-			            <type>pom</type>						
+						<artifactId>compiler</artifactId>
+						<version>${flex.version}</version>
+						<type>pom</type>
 					</dependency>
 				</dependencies>
-				
- 		        <executions>
-		        
-			        <execution>
-			            <goals>
-			                <goal>copy-flex-resources</goal>
-			            </goals>
-			            <configuration>
-			            	<webappDirectory>
-			            		${project.build.directory}/${project.build.finalName}
-			            	</webappDirectory>
-			            	<stripVersion>true</stripVersion>
-			            	<useFinalName>false</useFinalName>
-			            </configuration>
-			        </execution>
-			        
-		        </executions>      
-		        
-	        </plugin>
+
+				<executions>
+
+					<execution>
+						<goals>
+							<goal>copy-flex-resources</goal>
+						</goals>
+						<configuration>
+							<webappDirectory>
+								${project.build.directory}/${project.build.finalName}
+							</webappDirectory>
+							<stripVersion>true</stripVersion>
+							<useFinalName>false</useFinalName>
+						</configuration>
+					</execution>
+
+				</executions>
+
+			</plugin>
 			<plugin>
 				<artifactId>maven-dependency-plugin</artifactId>
 				<version>2.6</version>
@@ -146,8 +123,8 @@
 					</execution>
 				</executions>
 			</plugin>
-			
-			
+
+
 			<!-- Exclude class TestUtil from the test cases -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -160,19 +137,20 @@
 				</configuration>
 			</plugin>
 
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-deploy-plugin</artifactId>
-              <version>2.7</version>
-              <configuration>
-                <skip>true</skip>
-              </configuration>
-            </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>2.7</version>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
 
 		</plugins>
 		<pluginManagement>
 			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
@@ -229,12 +207,18 @@
 	</build>
 
 	<dependencies>
-			
+
 		<dependency>
 			<groupId>edu.isi.bmkeg</groupId>
 			<artifactId>triage</artifactId>
 			<classifier>mysql</classifier>
 			<type>zip</type>
+			<exclusions>
+				<exclusion>
+					<artifactId>vpdmfGenerator</artifactId>
+					<groupId>edu.isi.bmkeg</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!-- DAO -->
@@ -263,29 +247,35 @@
 					<artifactId>digitalLibrary-services</artifactId>
 					<groupId>edu.isi.bmkeg</groupId>
 				</exclusion>
+				<exclusion>
+					<artifactId>digitalLibraryDao</artifactId>
+					<groupId>edu.isi.bmkeg</groupId>
+				</exclusion>
 			</exclusions>
 		</dependency>
-		
-		<!-- 		
-			Client App (in Flex) to be embedded	within the WAR file.
-			
-			The html wrapper parameters ${htmlwrapper.swf} and 
-			${htmlwrapper.application} (configured as properties 
-			above) should refer to this resource.
-		-->
-		
+
+		<!-- Client App (in Flex) to be embedded within the WAR file. The html 
+			wrapper parameters ${htmlwrapper.swf} and ${htmlwrapper.application} (configured 
+			as properties above) should refer to this resource. -->
+
+		<dependency>
+			<groupId>edu.isi.bmkeg</groupId>
+			<artifactId>digitalLibraryDao</artifactId>
+		</dependency>
+
+
 		<dependency>
 			<groupId>edu.isi.bmkeg</groupId>
 			<artifactId>triage-services</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>edu.isi.bmkeg</groupId>
-			<artifactId>triageClientApp</artifactId>
+			<artifactId>sciKnowMineSystem</artifactId>
 			<type>swf</type>
 		</dependency>
 
-				<dependency>
+		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
 		</dependency>
@@ -304,27 +294,27 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
 			<exclusions>
-	         <exclusion>
-	            <groupId>commons-logging</groupId>
-	            <artifactId>commons-logging</artifactId>
-	         </exclusion>
-	      </exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
-				
+
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-tx</artifactId>
 			<exclusions>
-	         <exclusion>
-	            <groupId>commons-logging</groupId>
-	            <artifactId>commons-logging</artifactId>
-	         </exclusion>
-	      </exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!-- Spring Framework Security -->
@@ -365,54 +355,39 @@
 		<!-- Logging -->
 
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-
-		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
 			<version>${spring.version}</version>
 			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
-	      <groupId>org.slf4j</groupId>
-	      <artifactId>jcl-over-slf4j</artifactId>
-	      <version>${slf4j.version}</version>
-	      <scope>runtime</scope>
-	   </dependency>
-	   
-	   <dependency>
-	      <groupId>org.slf4j</groupId>
-	      <artifactId>slf4j-api</artifactId>
-	      <version>${slf4j.version}</version>
-	      <scope>runtime</scope>
-	   </dependency>
-	   
-	   <dependency>
-	      <groupId>org.slf4j</groupId>
-	      <artifactId>slf4j-log4j12</artifactId>
-	      <version>${slf4j.version}</version>
-	      <scope>runtime</scope>
-	   </dependency>
-	   
-	   <dependency>
-	      <groupId>log4j</groupId>
-	      <artifactId>log4j</artifactId>
-	      <version>${log4j.version}</version>
-	      <scope>runtime</scope>
-	   </dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>${slf4j.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${slf4j.version}</version>
+			<scope>runtime</scope>
+		</dependency>
 
 		<!-- Servlet -->
 
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
-			<version>2.5</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -432,28 +407,18 @@
 
 		<dependency>
 			<groupId>edu.isi.bmkeg</groupId>
-			<artifactId>digitalLibraryDao</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>edu.isi.bmkeg</groupId>
 			<artifactId>lapdftext</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
 		<dependency>
 			<groupId>org.thymeleaf</groupId>
 			<artifactId>thymeleaf-spring3</artifactId>
 		</dependency>
-		
+
 		<dependency>
-				<groupId>org.apache.tiles</groupId>
-				<artifactId>tiles-jsp</artifactId>
-				<version>3.0.1</version>
+			<groupId>org.apache.tiles</groupId>
+			<artifactId>tiles-jsp</artifactId>
+			<version>3.0.1</version>
 		</dependency>
 
 	</dependencies>
