@@ -2,11 +2,15 @@
 
 	<c:url value="/index.jsp" var="index" />
 	<c:url value="/dash.jsp" var="dash" />
-	<c:url value="/skm.jsp" var="skm" />
+	<c:url value="/skm-headFoot.jsp" var="skm" />
+	<c:url value="https://github.com/BMKEG/sciKnowMineProject" var="github" />
+	<c:url value="http://www.isi.edu/projects/sciknowmine/overview" var="isi" />
 
     <ul>
-    	<li><a href="${dash}">Dashboard</a></li>
-        <li><a href="${skm}">SciKnowMine</a></li>
+        <li><a href="${index}">Home</a></li>
+        <li><a href="${skm}">SciKnowMine Prototype</a></li>
+        <li><a href="${isi}">Academic Project</a></li>
+        <li><a href="${github}">Source Code</a></li>
     </ul>
 
 </div>

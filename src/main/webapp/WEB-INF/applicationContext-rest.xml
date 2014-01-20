@@ -11,5 +11,7 @@
 		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
 	<context:component-scan base-package="edu.isi.bmkeg.digitalLibrary" />
+	<context:component-scan base-package="edu.isi.bmkeg.ftd" />
+	<context:component-scan base-package="edu.isi.bmkeg.lapdf" />
 
 </beans>

@@ -1,18 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:flex="http://www.springframework.org/schema/flex"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:flex="http://www.springframework.org/schema/flex" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/flex http://www.springframework.org/schema/flex/spring-flex-1.5.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
- 	<flex:message-broker>
-		 
- 		<flex:secured> 		
- 			<flex:secured-channel channel="my-amf" access="ROLE_USER,ROLE_ANONYMOUS" />
-  			<flex:secured-channel channel="my-private-amf" access="ROLE_USER" />
-  			<flex:secured-channel channel="my-secure-amf" access="ROLE_USER" />
-  		</flex:secured>
+	<bean id="defaultMessageTemplate" 
+			class="org.springframework.flex.messaging.MessageTemplate" />
+
+	<flex:message-broker>
+
+		<flex:secured>
+			<flex:secured-channel channel="my-amf"
+				access="ROLE_USER,ROLE_ANONYMOUS" />
+			<flex:secured-channel channel="my-secure-amf"
+				access="ROLE_USER" />
+			<flex:secured-channel channel="my-polling-amf"
+				access="ROLE_USER,ROLE_ANONYMOUS" />
+		</flex:secured>
 
 	</flex:message-broker>
-  
+
+	<flex:message-destination id="serverUpdates" channels="my-polling-amf" />
+
+	<!-- Try waiting until after the flex beans are 
+		instantiated before scanning for services.
+		Placing this command here, allows us to autoinject 
+		MessageTemplate objects into the Services.   -->
+	<context:component-scan base-package="edu.isi.bmkeg" />
+	
 </beans>

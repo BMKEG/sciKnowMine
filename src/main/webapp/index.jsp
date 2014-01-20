@@ -34,7 +34,6 @@
 			<p>Welcome to SciKnowMine, a text mining architecture for
 				scientific knowledge.</p>
 
-
 			<p>You will soon be dead. Life will sometimes seem long and
 				tough, and 'God it's tiring' and you will sometimes be happy and
 				sometimes sad; and then you'll be old; and then you'll be dead.

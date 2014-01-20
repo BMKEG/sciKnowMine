@@ -10,25 +10,24 @@
  
  	<bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor"/>  
 
- 	<bean class="org.springframework.beans.factory.config.CustomScopeConfigurer">
+  	<bean class="org.springframework.beans.factory.config.CustomScopeConfigurer">
 	    <property name="scopes">
 	        <map>
-	            <entry key="thread">
-	                <bean class="org.springframework.context.support.SimpleThreadScope"/>
+	            <entry key="request">
+	                <bean class="org.springframework.web.context.request.RequestScope"/>
 	            </entry>
 	        </map>
 	    </property>
-	</bean> 
+	</bean>  
 
 	<bean id="dlVpdmf" class="edu.isi.bmkeg.vpdmf.dao.CoreDaoImpl" 
-		init-method="init" scope="thread"
+		init-method="init" scope="request"
 		p:uri="#{bmkegProperties.dbUrl}" 
 		p:login="#{bmkegProperties.dbUser}" 
 		p:password="#{bmkegProperties.dbPassword}">
 		
-		<!--  container to proxy the surrounding bean -->
 		<aop:scoped-proxy/>
 	
-	</bean>			
+	</bean>
 
 </beans>

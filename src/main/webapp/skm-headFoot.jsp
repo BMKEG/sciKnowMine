@@ -58,10 +58,10 @@
 </head>
 <body>
 
-	<!-- GENERIC SCIKNOWSOFT HEADER FOR WEBSITE
+	<!-- GENERIC SCIKNOWSOFT HEADER FOR WEBSITE -->
 	<jsp:include page="WEB-INF/view/includes/header.jspx" />
 	<jsp:include page="WEB-INF/view/includes/navigation.jspx" />
-	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 
 	<div id="main_content">
 
@@ -113,9 +113,11 @@
 		</div>
 	</div>
 
-	<!-- GENERIC SCIKNOWSOFT FOOTER FOR WEBSITE
+	<!-- GENERIC SCIKNOWSOFT FOOTER FOR WEBSITE -->
+
 	<jsp:include page="WEB-INF/view/includes/footer.jspx" />
-	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 
 </body>
 

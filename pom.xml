@@ -236,6 +236,10 @@
 					<groupId>edu.isi.bmkeg</groupId>
 				</exclusion>
 				<exclusion>
+					<artifactId>digitalLibrary-services</artifactId>
+					<groupId>edu.isi.bmkeg</groupId>
+				</exclusion>
+				<exclusion>
 					<artifactId>ftd</artifactId>
 					<groupId>edu.isi.bmkeg</groupId>
 				</exclusion>
@@ -244,11 +248,7 @@
 					<groupId>edu.isi.bmkeg</groupId>
 				</exclusion>
 				<exclusion>
-					<artifactId>digitalLibrary-services</artifactId>
-					<groupId>edu.isi.bmkeg</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>digitalLibraryDao</artifactId>
+					<artifactId>ftd-services</artifactId>
 					<groupId>edu.isi.bmkeg</groupId>
 				</exclusion>
 			</exclusions>
@@ -261,6 +261,28 @@
 		<dependency>
 			<groupId>edu.isi.bmkeg</groupId>
 			<artifactId>digitalLibraryDao</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>digitalLibrary-jpa</artifactId>
+					<groupId>edu.isi.bmkeg</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>digitalLibrary</artifactId>
+					<groupId>edu.isi.bmkeg</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>digitalLibrary-services</artifactId>
+					<groupId>edu.isi.bmkeg</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>ftd</artifactId>
+					<groupId>edu.isi.bmkeg</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>ftd-jpa</artifactId>
+					<groupId>edu.isi.bmkeg</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 
@@ -413,7 +435,7 @@
 		<dependency>
 			<groupId>org.thymeleaf</groupId>
 			<artifactId>thymeleaf-spring3</artifactId>
-		</dependency>
+		</dependency> 
 
 		<dependency>
 			<groupId>org.apache.tiles</groupId>
