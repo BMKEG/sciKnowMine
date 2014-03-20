@@ -21,5 +21,7 @@ public interface ExtendedTriageService {
 	List<String> readAllCorpusCounts() throws Exception;
 	
 	void transferTriageInsToArticleCorpora() throws Exception;
+
+	void switchInOutCodes(long scoreId, String code) throws Exception;
 	
 }

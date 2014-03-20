@@ -112,11 +112,11 @@
 							<artifactItems>
 								<artifactItem>
 									<groupId>edu.isi.bmkeg</groupId>
-									<artifactId>triage</artifactId>
+									<artifactId>vpdmf-triage</artifactId>
 									<classifier>mysql</classifier>
 									<type>zip</type>
 									<outputDirectory>${project.build.outputDirectory}</outputDirectory>
-									<destFileName>triage-mysql.zip</destFileName>
+									<destFileName>vpdmf-triage-mysql.zip</destFileName>
 								</artifactItem>
 							</artifactItems>
 						</configuration>
@@ -210,7 +210,7 @@
 
 		<dependency>
 			<groupId>edu.isi.bmkeg</groupId>
-			<artifactId>triage</artifactId>
+			<artifactId>vpdmf-triage</artifactId>
 			<classifier>mysql</classifier>
 			<type>zip</type>
 			<exclusions>
@@ -228,27 +228,27 @@
 			<artifactId>skmTriage</artifactId>
 			<exclusions>
 				<exclusion>
-					<artifactId>digitalLibrary-jpa</artifactId>
+					<artifactId>vpdmf-digitalLibrary-jpa</artifactId>
 					<groupId>edu.isi.bmkeg</groupId>
 				</exclusion>
 				<exclusion>
-					<artifactId>digitalLibrary</artifactId>
+					<artifactId>vpdmf-digitalLibrary</artifactId>
 					<groupId>edu.isi.bmkeg</groupId>
 				</exclusion>
 				<exclusion>
-					<artifactId>digitalLibrary-services</artifactId>
+					<artifactId>vpdmf-digitalLibrary-services</artifactId>
 					<groupId>edu.isi.bmkeg</groupId>
 				</exclusion>
 				<exclusion>
-					<artifactId>ftd</artifactId>
+					<artifactId>vpdmf-ftd</artifactId>
 					<groupId>edu.isi.bmkeg</groupId>
 				</exclusion>
 				<exclusion>
-					<artifactId>ftd-jpa</artifactId>
+					<artifactId>vpdmf-ftd-jpa</artifactId>
 					<groupId>edu.isi.bmkeg</groupId>
 				</exclusion>
 				<exclusion>
-					<artifactId>ftd-services</artifactId>
+					<artifactId>vpdmf-ftd-services</artifactId>
 					<groupId>edu.isi.bmkeg</groupId>
 				</exclusion>
 			</exclusions>
@@ -263,23 +263,23 @@
 			<artifactId>digitalLibraryDao</artifactId>
 			<exclusions>
 				<exclusion>
-					<artifactId>digitalLibrary-jpa</artifactId>
+					<artifactId>vpdmf-digitalLibrary-jpa</artifactId>
 					<groupId>edu.isi.bmkeg</groupId>
 				</exclusion>
 				<exclusion>
-					<artifactId>digitalLibrary</artifactId>
+					<artifactId>vpdmf-digitalLibrary</artifactId>
 					<groupId>edu.isi.bmkeg</groupId>
 				</exclusion>
 				<exclusion>
-					<artifactId>digitalLibrary-services</artifactId>
+					<artifactId>vpdmf-digitalLibrary-services</artifactId>
 					<groupId>edu.isi.bmkeg</groupId>
 				</exclusion>
 				<exclusion>
-					<artifactId>ftd</artifactId>
+					<artifactId>vpdmf-ftd</artifactId>
 					<groupId>edu.isi.bmkeg</groupId>
 				</exclusion>
 				<exclusion>
-					<artifactId>ftd-jpa</artifactId>
+					<artifactId>vpdmf-ftd-jpa</artifactId>
 					<groupId>edu.isi.bmkeg</groupId>
 				</exclusion>
 			</exclusions>
@@ -288,7 +288,7 @@
 
 		<dependency>
 			<groupId>edu.isi.bmkeg</groupId>
-			<artifactId>triage-services</artifactId>
+			<artifactId>vpdmf-triage-services</artifactId>
 		</dependency>
 
 		<dependency>

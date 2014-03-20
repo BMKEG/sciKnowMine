@@ -14,9 +14,9 @@ xmlns:jsp="http://java.sun.com/JSP/Page">
 	
 	<body>
 		<div class="container" style="padding-top: 50px;">
-			<jsp:include page="/WEB-INF/view/jsp/menu.jspx"/>	
+			<jsp:include page="/WEB-INF/view/jsp1/menu.jspx"/>	
 				<jsp:doBody />
-			<jsp:include page="/WEB-INF/view/jsp/footer.jspx"/>	
+			<jsp:include page="/WEB-INF/view/jsp1/footer.jspx"/>	
 		</div>
 	</body>
 </html>

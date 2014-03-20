@@ -42,6 +42,7 @@ import edu.isi.bmkeg.vpdmf.dao.CoreDao;
 import edu.isi.bmkeg.vpdmf.model.definitions.PrimitiveLink;
 import edu.isi.bmkeg.vpdmf.model.definitions.VPDMf;
 import edu.isi.bmkeg.vpdmf.model.definitions.ViewDefinition;
+import edu.isi.bmkeg.vpdmf.model.instances.AttributeInstance;
 import edu.isi.bmkeg.vpdmf.model.instances.LightViewInstance;
 import edu.isi.bmkeg.vpdmf.model.instances.ViewInstance;
 
@@ -108,12 +109,6 @@ public class ExtendedTriageServiceImpl implements
 		template.send("serverUpdates", 
 				"Triage Engine Initialization Complete");
 
-		//
-		// TODO:
-		// pretty clunky way of doing this: dump to a file and then invoke
-		// command-line
-		// functions on that file. Need better solution based on data.
-		//
 		File tempDir = Files.createTempDir();
 		File pdfFile = new File(tempDir.getPath() + "/" + fileName);
 		FileOutputStream output = new FileOutputStream(pdfFile.getPath());
@@ -132,25 +127,12 @@ public class ExtendedTriageServiceImpl implements
 			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			// Go get the FTDRuleSet
 			//
-			String rsPath = null;
+			FTDRuleSet rs = null;
 			if( ruleSetId != -1 ) {
-				FTDRuleSet rs = coreDao.findByIdInTrans(
+				rs = coreDao.findByIdInTrans(
 						ruleSetId, 
 						new FTDRuleSet(), 
 						"FTDRuleSet");
-				if( rs.getExcelFile() != null ) {
-					rsPath = tempDir.getPath() + "/" + rs.getFileName();
-					FileOutputStream fos = new FileOutputStream(rsPath);
-					fos.write(rs.getExcelFile());
-					fos.close();
-					te.setRuleFile(new File(rsPath));
-					template.send("serverUpdates", 
-							"Using Rule Set " 
-							+ rs.getVpdmfLabel());
-				} else {
-					throw new Exception("Error with rule file " + 
-							ruleSetId);	
-				}
 			} else {
 				throw new Exception("Error with rule file, id: " + ruleSetId); 
 			}
@@ -183,7 +165,7 @@ public class ExtendedTriageServiceImpl implements
 			
 			template.send("serverUpdates", "Add PDF to article citation (" 
 					+ pdfFile.getName() + ")" );
-			this.extDigLibDao.addPdfToArticleCitation(doc, ac, pdfFile, te.getRuleFile());
+			this.extDigLibDao.addPdfToArticleCitation(doc, ac, pdfFile, rs);
 			
 			template.send("serverUpdates", "Assigning In / Out code codes to article (" 
 					+ pdfFile.getName() + ")" );
@@ -256,7 +238,7 @@ public class ExtendedTriageServiceImpl implements
 			+ targetCorpus);
 		
 		TriageDocumentsClassifier cl = new TriageDocumentsClassifier(
-				null, targetCorpus, modelDir,
+				triageCorpus, targetCorpus, modelDir,
 				this.extDigLibDao.getCoreDao().getLogin(), 
 				this.extDigLibDao.getCoreDao().getPassword(), 
 				this.extDigLibDao.getCoreDao().getUri() );
@@ -462,6 +444,41 @@ public class ExtendedTriageServiceImpl implements
 
 		}
 
+	}
+
+	@Override
+	public void switchInOutCodes(long scoreId, String code) throws Exception {
+		
+		try {
+
+			CoreDao core = this.extDigLibDao.getCoreDao();
+
+			core.getCe().connectToDB();
+			core.getCe().turnOffAutoCommit();
+
+			ViewInstance vi = core.getCe().executeUIDQuery("TriagedArticle", scoreId);
+			
+			core.getCe().storeViewInstanceForUpdate(vi);
+			
+			AttributeInstance ai = vi.readAttributeInstance("]TriageScore|TriageScore.inOutCode", 0);
+			ai.writeValueString(code);
+			
+			core.getCe().executeUpdateQuery(vi);
+			
+			core.getCe().clearQuery();
+			core.getCe().commitTransaction();
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+			this.extDigLibDao.getCoreDao().getCe().rollbackTransaction();
+
+		} finally {
+
+			this.extDigLibDao.getCoreDao().getCe().closeDbConnection();
+
+		}
+		
 	}
 
 	

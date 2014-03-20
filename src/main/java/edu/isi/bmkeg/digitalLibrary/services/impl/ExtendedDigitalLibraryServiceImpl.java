@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.StringWriter;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -121,14 +122,41 @@ public class ExtendedDigitalLibraryServiceImpl implements
 		FileOutputStream output = new FileOutputStream(tempFile.getPath());
 		IOUtils.write(pdfFileData, output);
 
-		ArticleCitation ac = de.insertCodedPdfFile(tempFile, "pmid");
+		ArticleCitation ac = null;
+		
+		try {
 
-		LapdfDocument doc = de.blockifyFile(tempFile);
+			this.extDigLibDao.getCoreDao().getCe().connectToDB();
+			this.extDigLibDao.getCoreDao().getCe().turnOffAutoCommit();
 
-		de.classifyDocument(doc, de.getRuleFile());
+			ac = de.insertCodedPdfFile(tempFile, "pmid");
+	
+			LapdfDocument doc = de.blockifyFile(tempFile);
+	
+			de.classifyDocument(doc, de.getRuleFile());
+			
+			FTDRuleSet rs = null;
+			JournalEpoch je = this.extDigLibDao.retriveJournalEpochForCitation(ac);
+			if( je != null && je.getRules() != null) {
+				rs = je.getRules();	
+			} else {
+				rs = this.extDigLibDao.readRuleFileFromDisk(de.getRuleFile());	
+			}
+			de.getExtDigLibDao().addPdfToArticleCitation(doc, ac, tempFile, rs);
+		
+			this.extDigLibDao.getCoreDao().getCe().commitTransaction();
+			
+		} catch (Exception e) {
 
-		de.getExtDigLibDao().addPdfToArticleCitation(doc, ac, tempFile,
-				de.getRuleFile());
+			e.printStackTrace();
+			this.extDigLibDao.getCoreDao().getCe().rollbackTransaction();
+			throw e;
+
+		} finally {
+
+			this.extDigLibDao.getCoreDao().getCe().closeDbConnection();
+
+		}
 
 		// TODO: Need to add the articles to the named corpus if the name is
 		// set.
@@ -241,7 +269,7 @@ public class ExtendedDigitalLibraryServiceImpl implements
 
 			// This is the data structure to keep track
 			// of what epochs are defined in the database.
-			Map<String, Map<Integer, LightViewInstance>> epochs = new HashMap<String, Map<Integer, LightViewInstance>>();
+			Map<String, Map<Integer, Long>> epochs = new HashMap<String, Map<Integer, Long>>();
 
 			l = this.extDigLibDao.getCoreDao().listInTrans(
 					new JournalEpoch_qo(), "JournalEpoch");
@@ -254,12 +282,12 @@ public class ExtendedDigitalLibraryServiceImpl implements
 					Integer s = new Integer(epochMatch.group(2));
 					Integer e = new Integer(epochMatch.group(3));
 
-					Map<Integer, LightViewInstance> temp = new HashMap<Integer, LightViewInstance>();
+					Map<Integer, Long> temp = new HashMap<Integer, Long>();
 					if (epochs.containsKey(j)) {
 						temp = epochs.get(j);
 					}
 					for (int i = s; i <= e; i++) {
-						temp.put(i, lvi);
+						temp.put(i, -1L);
 					}
 					epochs.put(j, temp);
 
@@ -283,13 +311,9 @@ public class ExtendedDigitalLibraryServiceImpl implements
 
 			Map<String, Long> ids = new HashMap<String, Long>();
 
-			int lowest = -1, highest = -1;
-			JournalEpoch je = null;
-
 			ResultSet rs = this.extDigLibDao.getCoreDao().getCe()
 					.executeRawSqlQuery(sql);
-			rs.first();
-			while (!rs.isAfterLast()) {
+			while (rs.next()) {
 				Long jId = rs.getLong("vpdmfId");
 				String abbr = rs.getString("abbr");
 				String vol = rs.getString("volume");
@@ -299,35 +323,56 @@ public class ExtendedDigitalLibraryServiceImpl implements
 					String vStr = numMatch.group(1);
 					Integer v = new Integer(vStr);
 
-					if (je == null
-							&& (!epochs.containsKey(abbr) || (epochs
-									.containsKey(abbr) && !epochs.get(abbr)
-									.containsKey(v)))) {
-						je = this.generateNewJournalEpoch(abbr, jId);
-						je.setStartVol(v);
+					if (!epochs.containsKey(abbr)) {
+						epochs.put(abbr, new HashMap<Integer, Long>());
 					}
-
-					if (je != null) {
-						je.setEndVol(v);
+					if ( !epochs.get(abbr).containsKey(v) ||
+							epochs.get(abbr).get(v) != -1L) {
+						epochs.get(abbr).put(v,jId);
+					} else {
+						int i=0;
+						i++;
 					}
+				}
+			}
+			
+			JournalEpoch je = null;
+			for( String abbr : epochs.keySet() ) {			
+				
+				Integer[] array = epochs.get(abbr).keySet().toArray(new Integer[0]);
+				Arrays.sort(array);
 
-					if (je != null && epochs.containsKey(abbr)
-							&& epochs.get(abbr).containsKey(v + 1)) {
+				for(int i=0; i<array.length; i++) {
+					Integer v = array[i];
+					Long jId = epochs.get(abbr).get(v);
+			
+					if( je != null && epochs.containsKey(abbr) && 
+							!epochs.get(abbr).containsKey(v - 1)) {
 						l.add(this.convertEpochToLvi(je));
 						je = null;
 					}
-
+					
+					if( epochs.get(abbr).get(v) == -1L)
+						continue;
+					
+					if ( je == null ) {
+						je = this.generateNewJournalEpoch(abbr, jId);
+						je.setStartVol(v);
+					}
+					
+					je.setEndVol(v);
+										
 				}
-				ids.put(abbr, jId);
-				rs.next();
+							
 			}
+			rs.close();
 
 			if (je != null) {
 				l.add(this.convertEpochToLvi(je));
 			}
 
 		} finally {
-
+			
 			this.extDigLibDao.getCoreDao().getCe().closeDbConnection();
 
 		}
@@ -568,8 +613,7 @@ public class ExtendedDigitalLibraryServiceImpl implements
 			} else if (ruleSet.getFileName().endsWith("csv")) {
 				FileUtils.writeStringToFile(ruleFile, ruleSet.getCsv());
 			} else if (ruleSet.getFileName().endsWith("_drl.xls")) {
-				FileUtils
-						.writeByteArrayToFile(ruleFile, ruleSet.getExcelFile());
+				FileUtils.writeByteArrayToFile(ruleFile, ruleSet.getExcelFile());
 			}
 
 			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
