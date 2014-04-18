@@ -2,12 +2,13 @@ package edu.isi.bmkeg.digitalLibrary.services.impl;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -17,16 +18,25 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.flex.remoting.RemotingDestination;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.io.Files;
 
 import edu.isi.bmkeg.digitalLibrary.controller.DigitalLibraryEngine;
 import edu.isi.bmkeg.digitalLibrary.dao.ExtendedDigitalLibraryDao;
@@ -35,29 +45,28 @@ import edu.isi.bmkeg.digitalLibrary.model.citations.ArticleCitation;
 import edu.isi.bmkeg.digitalLibrary.model.citations.Journal;
 import edu.isi.bmkeg.digitalLibrary.model.citations.JournalEpoch;
 import edu.isi.bmkeg.digitalLibrary.model.qo.citations.ArticleCitation_qo;
-import edu.isi.bmkeg.digitalLibrary.model.qo.citations.Corpus_qo;
 import edu.isi.bmkeg.digitalLibrary.model.qo.citations.JournalEpoch_qo;
 import edu.isi.bmkeg.digitalLibrary.model.qo.citations.Journal_qo;
+import edu.isi.bmkeg.digitalLibrary.model.qo.citations.LiteratureCitation_qo;
 import edu.isi.bmkeg.digitalLibrary.services.ExtendedDigitalLibraryService;
+import edu.isi.bmkeg.ftd.dao.FtdDao;
+import edu.isi.bmkeg.ftd.dao.impl.FtdDaoImpl;
 import edu.isi.bmkeg.ftd.model.FTD;
 import edu.isi.bmkeg.ftd.model.FTDFragmentBlock;
 import edu.isi.bmkeg.ftd.model.FTDRuleSet;
 import edu.isi.bmkeg.ftd.model.qo.FTD_qo;
+import edu.isi.bmkeg.lapdf.controller.LapdfEngine;
 import edu.isi.bmkeg.lapdf.controller.LapdfVpdmfEngine;
 import edu.isi.bmkeg.lapdf.dao.vpdmf.LAPDFTextDaoImpl;
+import edu.isi.bmkeg.lapdf.extraction.exceptions.ClassificationException;
 import edu.isi.bmkeg.lapdf.model.LapdfDocument;
 import edu.isi.bmkeg.lapdf.pmcXml.PmcXmlArticle;
 import edu.isi.bmkeg.lapdf.xml.model.LapdftextXMLDocument;
-import edu.isi.bmkeg.triage.model.qo.TriageScore_qo;
-import edu.isi.bmkeg.uml.model.UMLclass;
 import edu.isi.bmkeg.utils.Converters;
 import edu.isi.bmkeg.utils.xml.XmlBindingTools;
 import edu.isi.bmkeg.vpdmf.dao.CoreDao;
-import edu.isi.bmkeg.vpdmf.model.definitions.PrimitiveLink;
 import edu.isi.bmkeg.vpdmf.model.definitions.VPDMf;
 import edu.isi.bmkeg.vpdmf.model.definitions.ViewDefinition;
-import edu.isi.bmkeg.vpdmf.model.instances.AttributeInstance;
-import edu.isi.bmkeg.vpdmf.model.instances.ClassInstance;
 import edu.isi.bmkeg.vpdmf.model.instances.LightViewInstance;
 import edu.isi.bmkeg.vpdmf.model.instances.ViewBasedObjectGraph;
 import edu.isi.bmkeg.vpdmf.model.instances.ViewInstance;
@@ -111,41 +120,53 @@ public class ExtendedDigitalLibraryServiceImpl implements
 
 		init();
 
-		//
-		// TODO:
-		// pretty clunky way of doing this: dump to a file and then invoke
-		// command-line
-		// functions on that file. Need better solution based on data.
-		//
-		File tempDir = Files.createTempDir();
-		File tempFile = new File(tempDir.getPath() + "/" + fileName);
-		FileOutputStream output = new FileOutputStream(tempFile.getPath());
-		IOUtils.write(pdfFileData, output);
+		File workDir = new File(this.extDigLibDao.getCoreDao()
+				.getWorkingDirectory());
 
 		ArticleCitation ac = null;
-		
+
 		try {
 
 			this.extDigLibDao.getCoreDao().getCe().connectToDB();
 			this.extDigLibDao.getCoreDao().getCe().turnOffAutoCommit();
 
-			ac = de.insertCodedPdfFile(tempFile, "pmid");
-	
-			LapdfDocument doc = de.blockifyFile(tempFile);
-	
-			de.classifyDocument(doc, de.getRuleFile());
-			
-			FTDRuleSet rs = null;
-			JournalEpoch je = this.extDigLibDao.retriveJournalEpochForCitation(ac);
-			if( je != null && je.getRules() != null) {
-				rs = je.getRules();	
-			} else {
-				rs = this.extDigLibDao.readRuleFileFromDisk(de.getRuleFile());	
+			ac = de.insertCodedPdfFileName(fileName, "pmid");
+			String pth = "pdfs/" + ac.getJournal().getAbbr() + "/"
+					+ ac.getPubYear() + "/" + ac.getVolValue();
+			pth = pth.replaceAll("\\s+", "_");
+			File pdfDir = new File(workDir.getPath() + "/" + pth);
+			boolean status = pdfDir.mkdirs();
+
+			if (!status && !pdfDir.exists()) {
+				throw new Exception(
+						"Could not create directories for PDF file. Is "
+								+ workDir + " writable?");
 			}
-			de.getExtDigLibDao().addPdfToArticleCitation(doc, ac, tempFile, rs);
-		
+
+			File pdfFile = new File(pdfDir.getPath() + "/" + fileName);
+
+			// note: we always overwrite any existing files.
+			FileOutputStream output = new FileOutputStream(pdfFile.getPath());
+			IOUtils.write(pdfFileData, output);
+
+			LapdfDocument doc = de.blockifyFile(pdfFile);
+
+			/*
+			 * FTDRuleSet rs = null; JournalEpoch je =
+			 * this.extDigLibDao.retriveJournalEpochForCitation(ac); if( je !=
+			 * null && je.getRules() != null) { rs = je.getRules(); File
+			 * tempRuleFile = new File(workDir.getPath()+ "/" +
+			 * rs.getFileName()); this.extDigLibDao.dumpRuleFileToDisk(rs,
+			 * tempRuleFile); de.setRuleFile(tempRuleFile); } else { rs =
+			 * this.extDigLibDao.readRuleFileFromDisk(de.getRuleFile()); }
+			 * 
+			 * de.classifyDocument(doc, de.getRuleFile());
+			 */
+
+			de.getExtDigLibDao().addPdfToArticleCitation(doc, ac, pdfFile);
+
 			this.extDigLibDao.getCoreDao().getCe().commitTransaction();
-			
+
 		} catch (Exception e) {
 
 			e.printStackTrace();
@@ -157,15 +178,6 @@ public class ExtendedDigitalLibraryServiceImpl implements
 			this.extDigLibDao.getCoreDao().getCe().closeDbConnection();
 
 		}
-
-		// TODO: Need to add the articles to the named corpus if the name is
-		// set.
-		// if( corpusName != null )
-		// de.(
-		// mapPmidsToVpdmfids.keySet(),
-		// corpusName);
-
-		Converters.recursivelyDeleteFiles(tempDir);
 
 		return ac;
 
@@ -326,44 +338,45 @@ public class ExtendedDigitalLibraryServiceImpl implements
 					if (!epochs.containsKey(abbr)) {
 						epochs.put(abbr, new HashMap<Integer, Long>());
 					}
-					if ( !epochs.get(abbr).containsKey(v) ||
-							epochs.get(abbr).get(v) != -1L) {
-						epochs.get(abbr).put(v,jId);
+					if (!epochs.get(abbr).containsKey(v)
+							|| epochs.get(abbr).get(v) != -1L) {
+						epochs.get(abbr).put(v, jId);
 					} else {
-						int i=0;
+						int i = 0;
 						i++;
 					}
 				}
 			}
-			
+
 			JournalEpoch je = null;
-			for( String abbr : epochs.keySet() ) {			
-				
-				Integer[] array = epochs.get(abbr).keySet().toArray(new Integer[0]);
+			for (String abbr : epochs.keySet()) {
+
+				Integer[] array = epochs.get(abbr).keySet()
+						.toArray(new Integer[0]);
 				Arrays.sort(array);
 
-				for(int i=0; i<array.length; i++) {
+				for (int i = 0; i < array.length; i++) {
 					Integer v = array[i];
 					Long jId = epochs.get(abbr).get(v);
-			
-					if( je != null && epochs.containsKey(abbr) && 
-							!epochs.get(abbr).containsKey(v - 1)) {
+
+					if (je != null && epochs.containsKey(abbr)
+							&& !epochs.get(abbr).containsKey(v - 1)) {
 						l.add(this.convertEpochToLvi(je));
 						je = null;
 					}
-					
-					if( epochs.get(abbr).get(v) == -1L)
+
+					if (epochs.get(abbr).get(v) == -1L)
 						continue;
-					
-					if ( je == null ) {
+
+					if (je == null) {
 						je = this.generateNewJournalEpoch(abbr, jId);
 						je.setStartVol(v);
 					}
-					
+
 					je.setEndVol(v);
-										
+
 				}
-							
+
 			}
 			rs.close();
 
@@ -372,7 +385,7 @@ public class ExtendedDigitalLibraryServiceImpl implements
 			}
 
 		} finally {
-			
+
 			this.extDigLibDao.getCoreDao().getCe().closeDbConnection();
 
 		}
@@ -602,42 +615,37 @@ public class ExtendedDigitalLibraryServiceImpl implements
 			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			// Dump rulefile to disk on server
 			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-			tempDir = Files.createTempDir();
-			File ruleFile = new File(tempDir.getPath() + "/"
+			String wdPth = this.extDigLibDao.getCoreDao().getWorkingDirectory();
+			File ruleDir = new File(wdPth + "/rules");
+			File ruleFile = new File(ruleDir.getPath() + "/"
 					+ ruleSet.getFileName());
+
 			String s = ruleSet.getFileName();
 			ruleSet.setRsName(s.substring(0, s.length() - 4));
-			ruleSet.setRsDescription("");
-			if (s.endsWith(".drl")) {
-				FileUtils.writeStringToFile(ruleFile, ruleSet.getRuleBody());
-			} else if (ruleSet.getFileName().endsWith("csv")) {
-				FileUtils.writeStringToFile(ruleFile, ruleSet.getCsv());
-			} else if (ruleSet.getFileName().endsWith("_drl.xls")) {
-				FileUtils.writeByteArrayToFile(ruleFile, ruleSet.getExcelFile());
-			}
 
 			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			// Get the original LAPDFtext Document
 			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-			LapdfVpdmfEngine lapdfEng = new LapdfVpdmfEngine(ruleFile);
-			LapdfDocument document = lapdfEng.blockifyXml(ftd.getXml());
+			LapdfVpdmfEngine lapdfEng = new LapdfVpdmfEngine();
+
+			File xmlFile = new File(wdPth + "/pdfs/" + ftd.getXmlFile());
+			File pmcXmlFile = new File(wdPth + "/pdfs/" + ftd.getPmcXmlFile());
+			String xml = FileUtils.readFileToString(xmlFile, "UTF-8");
+
+			LapdfDocument document = lapdfEng.blockifyXml(xml);
+
 			lapdfEng.classifyDocument(document, ruleFile);
 
-			LapdftextXMLDocument xml = document.convertToLapdftextXmlFormat();
-			StringWriter writer = new StringWriter();
-			XmlBindingTools.generateXML(xml, writer);
-			ftd.setXml(writer.toString());
+			LapdftextXMLDocument lapdfXml = document
+					.convertToLapdftextXmlFormat();
+			FileWriter writer = new FileWriter(xmlFile);
+			XmlBindingTools.generateXML(lapdfXml, writer);
 
 			PmcXmlArticle xml2 = document.convertToPmcXmlFormat();
-			StringWriter writer2 = new StringWriter();
+			FileWriter writer2 = new FileWriter(pmcXmlFile);
 			XmlBindingTools.generateXML(xml2, writer2);
-			ftd.setPmcXml(writer2.toString());
 
 			ftd.setRuleSet(ruleSet);
-
-			FileWriter tempWriter = new FileWriter(new File(
-					ruleFile.getParent() + "/temp.xml"));
-			XmlBindingTools.generateXML(xml, tempWriter);
 
 			this.extDigLibDao.getCoreDao()
 					.updateInTrans(ftd, "ArticleDocument");
@@ -653,131 +661,25 @@ public class ExtendedDigitalLibraryServiceImpl implements
 		} finally {
 
 			this.extDigLibDao.getCoreDao().getCe().closeDbConnection();
-			if (tempDir != null)
-				Converters.recursivelyDeleteFiles(tempDir);
 
 		}
 
 		return -1L;
 
 	}
-	
-	@Override
-	public Long runRuleSetOnJournalEpoch(Long epochId)
-			throws Exception {
 
-		File tempDir = null;
+	@Override
+	public Long runRuleSetOnJournalEpoch(Long epochId) throws Exception {
+
 		try {
 
 			this.extDigLibDao.getCoreDao().getCe().connectToDB();
 			this.extDigLibDao.getCoreDao().getCe().turnOffAutoCommit();
 
-			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-			// Note that we are retrieving an ArticleDocument view
-			// which contains the FTD objects associated with this
-			// ArticleCitation.
-			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-			JournalEpoch_qo jeQo = new JournalEpoch_qo();
-			jeQo.setVpdmfId(epochId.toString());
+			runRulesOverEpochInTrans(epochId);
 
-			List<LightViewInstance> l = this.extDigLibDao.getCoreDao()
-					.listInTrans(jeQo, "JournalEpoch");
+			this.extDigLibDao.getCoreDao().getCe().commitTransaction();
 
-			JournalEpoch epoch = null;
-			if (l.size() == 1) {
-				epoch = this.extDigLibDao.getCoreDao().findByIdInTrans(
-						l.get(0).getVpdmfId(), new JournalEpoch(), "JournalEpoch");
-			} else {
-				return -1L;
-			}
-
-			FTD_qo fQo = new FTD_qo();
-			ArticleCitation_qo aQo = new ArticleCitation_qo();
-			fQo.setCitation(aQo);
-			Journal_qo jQo = new Journal_qo();
-			aQo.setJournal(jQo);
-			aQo.setVolValue("<vpdmf-gteq>" + epoch.getStartVol() 
-					+ "<vpdmf-and><vpdmf-lteq>" + epoch.getEndVol());
-			jQo.setAbbr( epoch.getJournal().getAbbr() );
-
-			List<LightViewInstance> l2 = this.extDigLibDao.getCoreDao()
-					.listInTrans(fQo, "ArticleDocument");
-
-			// ~~~~~~~~~~~~~~~~~~~~~~
-			// Retrieve the rule set.
-			// ~~~~~~~~~~~~~~~~~~~~~~
-			FTDRuleSet ruleSet = this.extDigLibDao.getCoreDao()
-					.findByIdInTrans(epoch.getRules().getVpdmfId(), 
-							new FTDRuleSet(), "FTDRuleSet");
-
-			if (ruleSet == null) {
-				return -1L;
-			}
-
-			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-			// Dump rulefile to disk on server
-			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-			tempDir = Files.createTempDir();
-			File ruleFile = new File(tempDir.getPath() + "/"
-					+ ruleSet.getFileName());
-			String s = ruleSet.getFileName();
-			ruleSet.setRsName(s.substring(0, s.length() - 4));
-			ruleSet.setRsDescription("");
-			if (s.endsWith(".drl")) {
-				FileUtils.writeStringToFile(ruleFile, ruleSet.getRuleBody());
-			} else if (ruleSet.getFileName().endsWith("csv")) {
-				FileUtils.writeStringToFile(ruleFile, ruleSet.getCsv());
-			} else if (ruleSet.getFileName().endsWith("_drl.xls")) {
-				FileUtils
-						.writeByteArrayToFile(ruleFile, ruleSet.getExcelFile());
-			}
-
-			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-			// Get the original LAPDFtext Document
-			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-			for(LightViewInstance lvi : l2) {
-				
-				FTD ftd = this.extDigLibDao.getCoreDao().findByIdInTrans(
-							lvi.getVpdmfId(), new FTD(), "ArticleDocument");
-				
-				// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-				// Get ready to run update query on this view.
-				// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-				ViewBasedObjectGraph vbog = new ViewBasedObjectGraph(
-						this.extDigLibDao.getCoreDao().getTop(), this.extDigLibDao
-								.getCoreDao().getCl(), "FTD");
-				ViewInstance vi = vbog.objectGraphToView(ftd, true);
-				this.extDigLibDao.getCoreDao().getCe()
-						.storeViewInstanceForUpdate(vi);
-				
-				LapdfVpdmfEngine lapdfEng = new LapdfVpdmfEngine(ruleFile);
-			
-				LapdfDocument document = lapdfEng.blockifyXml(ftd.getXml());
-				lapdfEng.classifyDocument(document, ruleFile);
-
-				LapdftextXMLDocument xml = document.convertToLapdftextXmlFormat();
-				StringWriter writer = new StringWriter();
-				XmlBindingTools.generateXML(xml, writer);
-				ftd.setXml(writer.toString());
-
-				PmcXmlArticle xml2 = document.convertToPmcXmlFormat();
-				StringWriter writer2 = new StringWriter();
-				XmlBindingTools.generateXML(xml2, writer2);
-				ftd.setPmcXml(writer2.toString());
-
-				ftd.setRuleSet(ruleSet);
-
-				FileWriter tempWriter = new FileWriter(new File(
-						ruleFile.getParent() + "/temp.xml"));
-				XmlBindingTools.generateXML(xml, tempWriter);
-
-				this.extDigLibDao.getCoreDao()
-					.updateInTrans(ftd, "ArticleDocument");
-
-				this.extDigLibDao.getCoreDao().getCe().commitTransaction();
-			
-			}
-			
 			return epochId;
 
 		} catch (Exception e) {
@@ -787,12 +689,151 @@ public class ExtendedDigitalLibraryServiceImpl implements
 		} finally {
 
 			this.extDigLibDao.getCoreDao().getCe().closeDbConnection();
-			if (tempDir != null)
-				Converters.recursivelyDeleteFiles(tempDir);
 
 		}
 
 		return -1L;
+
+	}
+
+	@Override
+	public void runRulesOverAllEpochs() throws Exception {
+
+		List<LightViewInstance> epochs = listExtendedJournalEpochs();
+
+		try {
+
+			this.extDigLibDao.getCoreDao().getCe().connectToDB();
+			this.extDigLibDao.getCoreDao().getCe().turnOffAutoCommit();
+
+			for (LightViewInstance epochLvi : epochs) {
+				logger.info("Epoch: " + epochLvi.getVpdmfLabel() );
+				this.runRulesOverEpochInTrans(epochLvi.getVpdmfId());
+			}
+
+			this.extDigLibDao.getCoreDao().getCe().commitTransaction();
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+
+		} finally {
+
+			this.extDigLibDao.getCoreDao().getCe().closeDbConnection();
+
+		}
+
+	}
+
+	private Long runRulesOverEpochInTrans(Long epochId) throws Exception,
+			IOException, ClassificationException, JAXBException {
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		// Note that we are retrieving an ArticleDocument view
+		// which contains the FTD objects associated with this
+		// ArticleCitation.
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		JournalEpoch_qo jeQo = new JournalEpoch_qo();
+		jeQo.setVpdmfId(epochId.toString());
+
+		List<LightViewInstance> l = this.extDigLibDao.getCoreDao().listInTrans(
+				jeQo, "JournalEpoch");
+
+		JournalEpoch epoch = null;
+		if (l.size() == 1) {
+			epoch = this.extDigLibDao.getCoreDao().findByIdInTrans(
+					l.get(0).getVpdmfId(), new JournalEpoch(), "JournalEpoch");
+		} else {
+			return -1L;
+		}
+
+		FTD_qo fQo = new FTD_qo();
+		ArticleCitation_qo aQo = new ArticleCitation_qo();
+		fQo.setCitation(aQo);
+		Journal_qo jQo = new Journal_qo();
+		aQo.setJournal(jQo);
+		aQo.setVolValue("<vpdmf-gteq>" + epoch.getStartVol()
+				+ "<vpdmf-and><vpdmf-lteq>" + epoch.getEndVol());
+		jQo.setAbbr(epoch.getJournal().getAbbr());
+
+		List<LightViewInstance> l2 = this.extDigLibDao.getCoreDao()
+				.listInTrans(fQo, "ArticleDocument");
+
+		// ~~~~~~~~~~~~~~~~~~~~~~
+		// Retrieve the rule set.
+		// ~~~~~~~~~~~~~~~~~~~~~~
+		FTDRuleSet ruleSet = this.extDigLibDao.getCoreDao().findByIdInTrans(
+				epoch.getRules().getVpdmfId(), new FTDRuleSet(), "FTDRuleSet");
+
+		if (ruleSet == null) {
+			return -1L;
+		}
+
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		// Dump rulefile to disk on server
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		String wdPth = this.extDigLibDao.getCoreDao().getWorkingDirectory();
+		File ruleDir = new File(wdPth + "/rules");
+		File ruleFile = new File(ruleDir.getPath() + "/"
+				+ ruleSet.getFileName());
+
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		// Get the original LAPDFtext Document
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		for (LightViewInstance lvi : l2) {
+
+			FTD ftd = this.extDigLibDao.getCoreDao().findByIdInTrans(
+					lvi.getVpdmfId(), new FTD(), "ArticleDocument");
+
+			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			// Get ready to run update query on this view.
+			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			ViewBasedObjectGraph vbog = new ViewBasedObjectGraph(
+					this.extDigLibDao.getCoreDao().getTop(), this.extDigLibDao
+							.getCoreDao().getCl(), "FTD");
+			ViewInstance vi = vbog.objectGraphToView(ftd, true);
+			this.extDigLibDao.getCoreDao().getCe()
+					.storeViewInstanceForUpdate(vi);
+
+			LapdfVpdmfEngine lapdfEng = new LapdfVpdmfEngine();
+
+			String s = ftd.getName();
+			ftd.setPmcXmlFile(s.substring(0, s.length() - 4) + "_pmc.xml");
+			ftd.setPmcLoaded(true);
+
+			File xmlFile = new File(wdPth + "/pdfs/" + ftd.getXmlFile());
+			File pmcXmlFile = new File(wdPth + "/pdfs/" + ftd.getPmcXmlFile());
+
+			String xml = FileUtils.readFileToString(xmlFile, "UTF-8");
+
+			LapdfDocument document = lapdfEng.blockifyXml(xml);
+			lapdfEng.classifyDocument(document, ruleFile);
+
+			LapdftextXMLDocument lapdfXml = document
+					.convertToLapdftextXmlFormat();
+			FileWriter writer = new FileWriter(xmlFile);
+			XmlBindingTools.generateXML(lapdfXml, writer);
+			logger.info("Writing " + xmlFile.getPath() );
+
+			PmcXmlArticle xml2 = null;
+			try {
+				xml2 = document.convertToPmcXmlFormat();
+			} catch (Exception e) {
+				e.printStackTrace();
+				continue;
+			}
+
+			FileWriter writer2 = new FileWriter(pmcXmlFile);
+			XmlBindingTools.generateXML(xml2, writer2);
+			logger.info("Writing " + pmcXmlFile.getPath() );
+
+			ftd.setRuleSet(ruleSet);
+
+			this.extDigLibDao.getCoreDao()
+					.updateInTrans(ftd, "ArticleDocument");
+
+		}
+
+		return epochId;
 
 	}
 
@@ -828,7 +869,12 @@ public class ExtendedDigitalLibraryServiceImpl implements
 			// Get the original LAPDFtext Document
 			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			LapdfVpdmfEngine lapdfEng = new LapdfVpdmfEngine();
-			LapdfDocument document = lapdfEng.blockifyXml(ftd.getXml());
+
+			String wdPth = this.extDigLibDao.getCoreDao().getWorkingDirectory();
+			File xmlFile = new File(wdPth + "/" + ftd.getXmlFile());
+			String xml = FileUtils.readFileToString(xmlFile, "UTF-8");
+
+			LapdfDocument document = lapdfEng.blockifyXml(xml);
 			return lapdfEng.dumpFeaturesToSpreadsheetString(document);
 
 		} catch (Exception e) {
@@ -845,4 +891,178 @@ public class ExtendedDigitalLibraryServiceImpl implements
 
 	}
 
+	public byte[] loadSwf(Long vpdmfId) throws Exception {
+
+		init();
+
+		CoreDao coreDao = this.extDigLibDao.getCoreDao();
+		FtdDao ftdDao = new FtdDaoImpl(coreDao);
+
+		FTD_qo qFtd = new FTD_qo();
+		LiteratureCitation_qo lc = new LiteratureCitation_qo();
+		qFtd.setCitation(lc);
+		lc.setVpdmfId(String.valueOf(vpdmfId));
+		List<LightViewInstance> l = ftdDao.listArticleDocument(qFtd);
+
+		if (l.size() > 1) {
+			return null;
+		}
+
+		Resource logoSwf = new ClassPathResource(
+				"edu/isi/bmkeg/digitalLibrary/rest/00000.swf");
+		byte[] logoSwfBytes = IOUtils.toByteArray(logoSwf.getInputStream());
+
+		if (l.size() == 1) {
+			vpdmfId = l.get(0).getVpdmfId();
+			FTD ftd = ftdDao.findArticleDocumentById(vpdmfId);
+
+			String wd = coreDao.getWorkingDirectory();
+			File laSwfFile = new File(wd + "/pdfs/" + ftd.getLaswfFile());
+			byte[] laSwf = Converters.fileContentsToBytesArray(laSwfFile);
+
+			return laSwf;
+
+		}
+
+		return logoSwfBytes;
+
+	}
+	
+	public String loadXml(Long vpdmfId) throws Exception {
+
+		init();
+
+		CoreDao coreDao = this.extDigLibDao.getCoreDao();
+		FtdDao ftdDao = new FtdDaoImpl(coreDao);
+
+		FTD_qo qFtd = new FTD_qo();
+		LiteratureCitation_qo lc = new LiteratureCitation_qo();
+		qFtd.setCitation(lc);
+		lc.setVpdmfId(String.valueOf(vpdmfId));
+		List<LightViewInstance> l = ftdDao.listArticleDocument(qFtd);
+
+		if (l.size() > 1) {
+			return null;
+		}
+
+		LapdftextXMLDocument xmlDoc = new LapdftextXMLDocument();
+		StringWriter writer = new StringWriter();
+		XmlBindingTools.generateXML(xmlDoc, writer);				
+		String xml = writer.toString();
+		
+		if (l.size() == 1) {
+			vpdmfId = l.get(0).getVpdmfId();
+			FTD ftd = ftdDao.findArticleDocumentById(vpdmfId);
+			
+			String wd = ftdDao.getCoreDao().getWorkingDirectory();
+			File xmlFile = new File( wd + "/pdfs/" + ftd.getXmlFile() );
+			
+			if( !xmlFile.exists() ) {
+				return null;
+			}
+
+			xml = FileUtils.readFileToString(xmlFile, "UTF-8");
+			
+		}
+
+		return xml;
+
+	}
+
+	public String loadPmcXml(Long vpdmfId) throws Exception {
+
+		init();
+
+		CoreDao coreDao = this.extDigLibDao.getCoreDao();
+		FtdDao ftdDao = new FtdDaoImpl(coreDao);
+
+		FTD_qo qFtd = new FTD_qo();
+		LiteratureCitation_qo lc = new LiteratureCitation_qo();
+		qFtd.setCitation(lc);
+		lc.setVpdmfId(String.valueOf(vpdmfId));
+		List<LightViewInstance> l = ftdDao.listArticleDocument(qFtd);
+
+		if (l.size() > 1) {
+			return null;
+		}
+
+		LapdftextXMLDocument xmlDoc = new LapdftextXMLDocument();
+		StringWriter writer = new StringWriter();
+		XmlBindingTools.generateXML(xmlDoc, writer);				
+		String pmcXml = writer.toString();
+		
+		if (l.size() == 1) {
+			vpdmfId = l.get(0).getVpdmfId();
+			FTD ftd = ftdDao.findArticleDocumentById(vpdmfId);
+			
+			String wd = ftdDao.getCoreDao().getWorkingDirectory();
+			File pmcXmlFile = new File( wd + "/pdfs/" +  ftd.getPmcXmlFile() );
+			
+			if( !pmcXmlFile.exists() ) {
+				return null;
+			}
+
+			pmcXml = FileUtils.readFileToString(pmcXmlFile, "UTF-8");
+			
+		}
+
+		return pmcXml;
+
+	}
+	
+	public String loadHtml(Long vpdmfId) throws Exception {
+
+		init();
+
+		CoreDao coreDao = this.extDigLibDao.getCoreDao();
+		FtdDao ftdDao = new FtdDaoImpl(coreDao);
+
+		FTD_qo qFtd = new FTD_qo();
+		LiteratureCitation_qo lc = new LiteratureCitation_qo();
+		qFtd.setCitation(lc);
+		lc.setVpdmfId(String.valueOf(vpdmfId));
+		List<LightViewInstance> l = ftdDao.listArticleDocument(qFtd);
+
+		if (l.size() > 1) {
+			return null;
+		}
+
+		LapdftextXMLDocument xmlDoc = new LapdftextXMLDocument();
+		StringWriter writer = new StringWriter();
+		XmlBindingTools.generateXML(xmlDoc, writer);				
+		String html = writer.toString();
+		
+		if (l.size() == 1) {
+			vpdmfId = l.get(0).getVpdmfId();
+			FTD ftd = ftdDao.findArticleDocumentById(vpdmfId);
+			
+			String wd = ftdDao.getCoreDao().getWorkingDirectory();
+			File pmcXmlFile = new File( wd + "/pdfs/" +  ftd.getPmcXmlFile() );
+			
+			if( !pmcXmlFile.exists() ) {
+				return null;
+			}
+			FileReader inputReader = new FileReader(pmcXmlFile);
+			StringWriter outputWriter = new StringWriter();
+			
+			TransformerFactory tf = TransformerFactory.newInstance();
+			Resource xslResource = new ClassPathResource(
+					"jatsPreviewStyleSheets/xslt/main/jats-html.xsl"
+					);
+			StreamSource xslt = new StreamSource(xslResource.getInputStream());
+			Transformer transformer = tf.newTransformer(xslt);
+
+			StreamSource source = new StreamSource(inputReader);
+			StreamResult result = new StreamResult(outputWriter);
+			transformer.transform(source, result);
+			html = outputWriter.toString();  
+						
+		}
+
+		return html;
+
+	}
+
+
+	
 }

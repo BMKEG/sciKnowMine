@@ -14,11 +14,11 @@
 
 		<flex:secured>
 			<flex:secured-channel channel="my-amf"
-				access="ROLE_USER,ROLE_ANONYMOUS" />
+				access="ROLE_USER" />
 			<flex:secured-channel channel="my-secure-amf"
 				access="ROLE_USER" />
 			<flex:secured-channel channel="my-polling-amf"
-				access="ROLE_USER,ROLE_ANONYMOUS" />
+				access="ROLE_USER" />
 		</flex:secured>
 
 	</flex:message-broker>

@@ -7,4 +7,6 @@ public interface ExtendedFtdService {
 
 	public long runRuleSet(FTD ftd, FTDRuleSet ftdRuleSet) throws Exception;
 
+	public void uploadFtdRuleSet(byte[] data, FTDRuleSet ftdRuleSet) throws Exception;
+	
 }

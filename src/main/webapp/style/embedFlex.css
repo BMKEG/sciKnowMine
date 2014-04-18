@@ -3,6 +3,7 @@ html, body {
 	 margin:0; 
      padding:0; 
      text-align: left; 
+     height:100%;
 	 font: normal 15px Calibri, Trebuchet MS, Trebuchet, Tahoma, Arial, Helvetica, sans-serif;
 }
 
@@ -70,7 +71,7 @@ img {
 
 #main_content {
 	width: 100%; 
- 	height: 100%;
+ 	height: 80%;
 }
 
 #main_content p, #main_content li {

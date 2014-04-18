@@ -36,7 +36,18 @@ public interface ExtendedDigitalLibraryService {
 	Long runRuleSetOnArticleCitation(Long ruleSetId, Long articleId) throws Exception;
 	
 	Long runRuleSetOnJournalEpoch(Long epochId) throws Exception;
+
+	void runRulesOverAllEpochs() throws Exception;
 	
 	String generateRuleFileFromLapdf(Long articleId) throws Exception;
+	
+	byte[] loadSwf(Long vpdmfId) throws Exception;
+
+	String loadXml(Long vpdmfId) throws Exception;
+
+	String loadPmcXml(Long vpdmfId) throws Exception;
+	
+	String loadHtml(Long vpdmfId) throws Exception;
+	
 	
 }

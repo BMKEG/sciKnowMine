@@ -40,6 +40,7 @@
 		<property name="dbUser" value="${bmkeg.dbUser}" />
 		<property name="dbPassword" value="${bmkeg.dbPassword}" />
 		<property name="persistenceUnitName" value="${bmkeg.persistenceUnitName}" />
+		<property name="workingDirectory" value="${bmkeg.workingDirectory}" />
 	</bean>
 
 	<!-- Resolves view names to protected .jsp resources within the /WEB-INF/views directory -->

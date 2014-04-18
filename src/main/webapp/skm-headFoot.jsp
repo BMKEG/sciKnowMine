@@ -46,7 +46,7 @@
 	attributes.name = "sciKnowMineSystem";
 	attributes.align = "middle";
 	attributes.style = "padding-top: 5px; padding-bottom: 5px;";
-	swfobject.embedSWF("sciKnowMineSystem.swf", "flashContent", "100%", "80%",
+	swfobject.embedSWF("sciKnowMineSystem.swf", "flashContent", "100%", "100%",
 			swfVersionStr, xiSwfUrlStr, flashvars, params, attributes);
 	swfobject.createCSS("#flashContent", "display:block;text-align:left;");
 </script>
@@ -68,7 +68,7 @@
 		<!-- SWFObject's dynamic embed method replaces this alternative HTML content with Flash content when enough 
 			 JavaScript and Flash plug-in support is available. The div is initially hidden so that it doesn't show
 			 when JavaScript is disabled. -->
-		<div id="flashContent">
+		<div id="flashContent" >
 			<p>To view this page ensure that Adobe Flash Player version
 				10.2.0 or greater is installed.</p>
 			<script type="text/javascript">
@@ -83,7 +83,7 @@
 
 			<noscript>
 				<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"
-					width="100%" height="100%" id="sciKnowMineSystem.swf">
+					width="100%" height="100%" id="sciKnowMineSystem.swf" >
 					<param name="movie" value="sciKnowMineSystem.swf" />
 					<param name="quality" value="high" />
 					<param name="bgcolor" value="#ffffff" />

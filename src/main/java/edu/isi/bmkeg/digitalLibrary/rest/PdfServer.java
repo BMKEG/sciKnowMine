@@ -1,23 +1,21 @@
 package edu.isi.bmkeg.digitalLibrary.rest;
 
-import java.io.StringReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.util.JAXBSource;
-import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -28,23 +26,25 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.context.WebApplicationContext;
 
-import edu.isi.bmkeg.lapdf.pmcXml.PmcXmlArticle;
+import antlr.StringUtils;
 
 import edu.isi.bmkeg.digitalLibrary.model.qo.citations.LiteratureCitation_qo;
 import edu.isi.bmkeg.ftd.dao.FtdDao;
 import edu.isi.bmkeg.ftd.model.FTD;
 import edu.isi.bmkeg.ftd.model.qo.FTD_qo;
 import edu.isi.bmkeg.lapdf.controller.LapdfEngine;
+import edu.isi.bmkeg.lapdf.pmcXml.PmcXmlArticle;
 import edu.isi.bmkeg.lapdf.xml.model.LapdftextXMLDocument;
+import edu.isi.bmkeg.utils.Converters;
+import edu.isi.bmkeg.utils.TextUtils;
 import edu.isi.bmkeg.utils.xml.XmlBindingTools;
 import edu.isi.bmkeg.vpdmf.model.instances.LightViewInstance;
 
-@Controller
+//@Controller
 public class PdfServer {
 
-	private static final Logger logger = Logger.getLogger(PdfServer.class);
+/*	private static final Logger logger = Logger.getLogger(PdfServer.class);
 
 	@Autowired
 	private FtdDao ftdDao;
@@ -91,8 +91,18 @@ public class PdfServer {
 		if( l.size() == 1 ) {
 			vpdmfId = l.get(0).getVpdmfId();
 			FTD ftd = this.ftdDao.findArticleDocumentById(vpdmfId);
+
+			String wd = this.ftdDao.getCoreDao().getWorkingDirectory();
+			File laSwfFile = new File( wd + "/pdfs/" + ftd.getLaswfFile() );
+			
+			if( !laSwfFile.exists() ) {
+				return new ResponseEntity<byte []>(HttpStatus.NOT_FOUND);
+			}
+
+			byte [] laSwf = Converters.fileContentsToBytesArray(laSwfFile);
+
 //		    responseHeaders.set("Content-Disposition", "attachment; filename=\"" +  fileName + '\"');
-			response = new ResponseEntity<byte []> (ftd.getLaswf(), responseHeaders, HttpStatus.OK);
+			response = new ResponseEntity<byte []> (laSwf, responseHeaders, HttpStatus.OK);
     	} 
 				
         return response;
@@ -134,14 +144,23 @@ public class PdfServer {
 		ResponseEntity<String> response = new ResponseEntity<String>(
 				writer.toString(), responseHeaders, HttpStatus.OK
 				);
-				
+						
 		if( l.size() == 1 ) {
 			LapdfEngine eng = new LapdfEngine();
 			vpdmfId = l.get(0).getVpdmfId();
 			FTD ftd = this.ftdDao.findArticleDocumentById(vpdmfId);
-			response = new ResponseEntity<String> (
-					ftd.getXml(), responseHeaders, HttpStatus.OK
-					);
+			
+			String wd = this.ftdDao.getCoreDao().getWorkingDirectory();
+			File xmlFile = new File( wd + "/pdfs/" + ftd.getXmlFile() );
+			
+			if( !xmlFile.exists() ) {
+				return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+			}
+
+			String xml = FileUtils.readFileToString(xmlFile, "UTF-8");
+			response = new ResponseEntity<String> (xml, responseHeaders, 
+					HttpStatus.OK);
+			
     	} 
 				
         return response;
@@ -188,10 +207,19 @@ public class PdfServer {
 			LapdfEngine eng = new LapdfEngine();
 			vpdmfId = l.get(0).getVpdmfId();
 			FTD ftd = this.ftdDao.findArticleDocumentById(vpdmfId);
-			response = new ResponseEntity<String> (
-					ftd.getPmcXml(), responseHeaders, HttpStatus.OK
-					);
-    	} 
+			
+			String wd = this.ftdDao.getCoreDao().getWorkingDirectory();
+			File pmcXmlFile = new File( wd + "/pdfs/" +  ftd.getPmcXmlFile() );
+			
+			if( !pmcXmlFile.exists() ) {
+				return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+			}
+
+			String pmcXml = FileUtils.readFileToString(pmcXmlFile);
+			response = new ResponseEntity<String> (pmcXml, responseHeaders, 
+					HttpStatus.OK);
+
+		} 
 				
         return response;
 		
@@ -233,14 +261,20 @@ public class PdfServer {
 				writer.toString(), responseHeaders, HttpStatus.OK
 				);
 		
+		
 		if( l.size() == 1 ) {
 
 			vpdmfId = l.get(0).getVpdmfId();
 			FTD ftd = this.ftdDao.findArticleDocumentById(vpdmfId);
+
+			String wd = this.ftdDao.getCoreDao().getWorkingDirectory();
+			File pmcXmlFile = new File( wd + "/pdfs/" +  ftd.getPmcXmlFile() );
 			
-			String pmcXmlString = ftd.getPmcXml();
-			
-			StringReader inputReader = new StringReader(pmcXmlString);
+			if( !pmcXmlFile.exists() ) {
+				return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+			}
+
+			FileReader inputReader = new FileReader(pmcXmlFile);
 			StringWriter outputWriter = new StringWriter();
 			
 			TransformerFactory tf = TransformerFactory.newInstance();
@@ -263,6 +297,6 @@ public class PdfServer {
 				
         return response;
 		
-	}
+	}*/
 
 }

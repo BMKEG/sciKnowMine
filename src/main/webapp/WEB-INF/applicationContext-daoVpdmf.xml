@@ -24,7 +24,8 @@
 		init-method="init" scope="request"
 		p:uri="#{bmkegProperties.dbUrl}" 
 		p:login="#{bmkegProperties.dbUser}" 
-		p:password="#{bmkegProperties.dbPassword}">
+		p:password="#{bmkegProperties.dbPassword}"
+		p:workingDirectory="#{bmkegProperties.workingDirectory}">
 		
 		<aop:scoped-proxy/>
 	

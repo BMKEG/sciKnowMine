@@ -78,9 +78,10 @@ public class ExtendedTriageServiceImpl implements
 
 		if (te == null) {
 
+			CoreDao core = extDigLibDao.getCoreDao();
+
 			te = new TriageEngine();
 			te.setCitDao(extDigLibDao);
-			CoreDao core = extDigLibDao.getCoreDao();
 			te.setDigLibDao(new DigitalLibraryDaoImpl(core));
 			te.setFtdDao(new LAPDFTextDaoImpl(core));
 			te.setExTriageDao(new TriageDaoExImpl(core));
@@ -94,6 +95,14 @@ public class ExtendedTriageServiceImpl implements
 					.fileContentsToBytesArray(jLookupFile);
 			Object jLookupPObj = Converters.byteArrayToObject(jLookupBytes);
 			te.setjLookup((Map<String, Journal>) jLookupPObj);
+			
+			if( te.getRuleFile() == null ) {
+				File ruleFile = ctx.getResource(
+								"classpath:edu/isi/bmkeg/digitalLibrary/general.drl"
+						).getFile();
+				te.setRuleFile(ruleFile);
+				System.out.println("ADDED RULE FILE: " + ruleFile.getPath());
+			}
 			
 		}
 
@@ -109,10 +118,7 @@ public class ExtendedTriageServiceImpl implements
 		template.send("serverUpdates", 
 				"Triage Engine Initialization Complete");
 
-		File tempDir = Files.createTempDir();
-		File pdfFile = new File(tempDir.getPath() + "/" + fileName);
-		FileOutputStream output = new FileOutputStream(pdfFile.getPath());
-		IOUtils.write(pdfFileData, output);
+		File workDir = new File(this.extDigLibDao.getCoreDao().getWorkingDirectory());
 
 		template.send("serverUpdates", 
 				"Transferring PDF to Server");
@@ -127,7 +133,7 @@ public class ExtendedTriageServiceImpl implements
 			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			// Go get the FTDRuleSet
 			//
-			FTDRuleSet rs = null;
+			/*FTDRuleSet rs = null;
 			if( ruleSetId != -1 ) {
 				rs = coreDao.findByIdInTrans(
 						ruleSetId, 
@@ -135,11 +141,11 @@ public class ExtendedTriageServiceImpl implements
 						"FTDRuleSet");
 			} else {
 				throw new Exception("Error with rule file, id: " + ruleSetId); 
-			}
+			}*/
 							
 			File cc = null;
 			if( codeFileContents != null && codeFileContents.length > 0) {
-				cc = new File(tempDir.getPath() + "/classificationCodes.txt");
+				cc = new File(workDir.getPath() + "/classificationCodes.txt");
 				FileUtils.writeByteArrayToFile(cc, codeFileContents);
 			}
 			
@@ -152,9 +158,19 @@ public class ExtendedTriageServiceImpl implements
 			}
 			
 			template.send("serverUpdates", "Inserting citations for " 
-					+ pdfFile.getName() );
-			ArticleCitation ac = te.insertCodedPdfFile(pdfFile, "pmid");
+					+ fileName );
+			ArticleCitation ac = te.insertCodedPdfFileName(fileName, "pmid");
 
+			String pth = "pdfs/" + ac.getJournal().getAbbr() + 
+					"/" + ac.getPubYear() + "/" + ac.getVolValue();
+			pth = pth.replaceAll("\\s+", "_");
+			File pdfDir = new File(workDir.getPath() + "/" + pth);
+			pdfDir.mkdirs();
+			
+			File pdfFile = new File(pdfDir.getPath() + "/" + fileName);
+			FileOutputStream output = new FileOutputStream(pdfFile.getPath());
+			IOUtils.write(pdfFileData, output);
+			
 			template.send("serverUpdates", "Finding text blocks (" 
 					+ pdfFile.getName() + ")" );
 			LapdfDocument doc = te.blockifyFile(pdfFile);
@@ -165,7 +181,7 @@ public class ExtendedTriageServiceImpl implements
 			
 			template.send("serverUpdates", "Add PDF to article citation (" 
 					+ pdfFile.getName() + ")" );
-			this.extDigLibDao.addPdfToArticleCitation(doc, ac, pdfFile, rs);
+			this.extDigLibDao.addPdfToArticleCitation(doc, ac, pdfFile);
 			
 			template.send("serverUpdates", "Assigning In / Out code codes to article (" 
 					+ pdfFile.getName() + ")" );
@@ -179,7 +195,7 @@ public class ExtendedTriageServiceImpl implements
 		} catch(Exception e) {
 			
 			coreDao.getCe().rollbackTransaction();
-			template.send("serverUpdates", pdfFile.getName() + " upload failed." );
+			template.send("serverUpdates", fileName + " upload failed." );
 			logger.error(e.toString());
 			
 			return false;
@@ -189,11 +205,9 @@ public class ExtendedTriageServiceImpl implements
 			if( coreDao != null && coreDao.getCe() != null)
 				coreDao.getCe().closeDbConnection();
 			
-			Converters.recursivelyDeleteFiles(tempDir);
-			
 		}
 
-		template.send("serverUpdates", pdfFile.getName() + " upload complete." );
+		template.send("serverUpdates", fileName + " upload complete." );
 		return true;
 
 	}
@@ -203,8 +217,7 @@ public class ExtendedTriageServiceImpl implements
 
 		init();
 		
-		File homeDir = new File(System.getProperty("user.home")
-				+ "/bmkeg");
+		File homeDir = new File(this.extDigLibDao.getCoreDao().getWorkingDirectory() + "/models");
 		if (!homeDir.exists()) {
 			homeDir.mkdirs();
 		}
@@ -215,7 +228,8 @@ public class ExtendedTriageServiceImpl implements
 				null, targetCorpus, modelDir,
 				this.extDigLibDao.getCoreDao().getLogin(), 
 				this.extDigLibDao.getCoreDao().getPassword(), 
-				this.extDigLibDao.getCoreDao().getUri() );
+				this.extDigLibDao.getCoreDao().getUri(), 
+				this.extDigLibDao.getCoreDao().getWorkingDirectory() );
 		cl.setMsgTemplate(this.template);
 
 		cl.run(true);
@@ -229,8 +243,7 @@ public class ExtendedTriageServiceImpl implements
 
 		init();
 		
-		File homeDir = new File(System.getProperty("user.home")
-				+ "/bmkeg");
+		File homeDir = new File(this.extDigLibDao.getCoreDao().getWorkingDirectory() + "/models");
 		if (!homeDir.exists()) {
 			homeDir.mkdirs();
 		}
@@ -241,7 +254,8 @@ public class ExtendedTriageServiceImpl implements
 				triageCorpus, targetCorpus, modelDir,
 				this.extDigLibDao.getCoreDao().getLogin(), 
 				this.extDigLibDao.getCoreDao().getPassword(), 
-				this.extDigLibDao.getCoreDao().getUri() );
+				this.extDigLibDao.getCoreDao().getUri(), 
+				this.extDigLibDao.getCoreDao().getWorkingDirectory() );
 		cl.setMsgTemplate(this.template);
 
 		cl.run(false);
@@ -396,8 +410,7 @@ public class ExtendedTriageServiceImpl implements
 				
 				ResultSet rs = core.getCe().executeRawSqlQuery(sql);
 				List<Long> citIds = new ArrayList<Long>();
-				while( !rs.isLast() ) {
-					rs.next();
+				while( rs.next() ) {
 					Long vpdmfId = rs.getLong("vpdmfId");
 					citIds.add(vpdmfId);
 				}

@@ -13,7 +13,7 @@
 		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 
 	<sec:http auto-config="true">
-		<sec:intercept-url pattern="/**" access="ROLE_ANONYMOUS,ROLE_USER" />
+		<sec:intercept-url pattern="/**" access="ROLE_USER" />
 	</sec:http>
 
 	<!-- <sec:authentication-manager alias="authenticationManager"> <sec:authentication-provider 
@@ -21,7 +21,7 @@
 	<sec:authentication-manager alias="authenticationManager">
 		<sec:authentication-provider>
 			<sec:user-service>
-				<sec:user name="user" password="pass" authorities="ROLE_USER" />
+				<sec:user name="mgi" password="jax" authorities="ROLE_USER" />
 			</sec:user-service>
 		</sec:authentication-provider>
 	</sec:authentication-manager>
