@@ -342,7 +342,6 @@
 			</exclusions>
 		</dependency>
 
-
 		<dependency>
 			<groupId>edu.isi.bmkeg</groupId>
 			<artifactId>vpdmf-triage-services</artifactId>
