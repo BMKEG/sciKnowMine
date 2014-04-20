@@ -13,11 +13,15 @@
 		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 
 	<sec:http auto-config="true">
-		<sec:intercept-url pattern="/**" access="ROLE_USER" />
+		<!-- Adding Password Protection
+		<sec:intercept-url pattern="/**" access="ROLE_USER" /> 
+		-->
+		<sec:intercept-url pattern="/**" access="ROLE_ANONYMOUS" />
 	</sec:http>
 
-	<!-- <sec:authentication-manager alias="authenticationManager"> <sec:authentication-provider 
-		ref="daoAuthenticationProvider" /> </sec:authentication-manager> -->
+	<!--<sec:authentication-manager alias="authenticationManager"> 
+		<sec:authentication-provider ref="daoAuthenticationProvider" />
+	</sec:authentication-manager>  -->
 	<sec:authentication-manager alias="authenticationManager">
 		<sec:authentication-provider>
 			<sec:user-service>
