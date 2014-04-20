@@ -3,8 +3,10 @@ Installation Instructions
 
 We recommend building and running from source. This should be straightforward and is the most functional in terms of troubleshooting and bug-fixing. 
 
-1. Clone the `bmkeg-parent` project from github to set all the dependency versions and repositories: `mvn clone https://github.com/BMKEG/bmkeg-parent`
-2. Clone the `sciKnowMine` project. This is just the wrapper for the web application. `mvn clone https://github.com/BMKEG/sciKnowMine`
+1. Clone the `bmkeg-parent` project from github to set all the dependency versions and repositories: 
+	* `mvn clone https://github.com/BMKEG/bmkeg-parent`  
+2. Clone the `sciKnowMine` project. This is just the wrapper for the web application. 
+	* `mvn clone https://github.com/BMKEG/sciKnowMine`
 	* _If you want to build all server + client elements from scratch, see our [sciKnowMineProject](https://github.com/BMKEG/sciKnowMineProject) Github page_.  
 3. `cd sciKnowMine` - change directories into the project folder.
 4. `mvn clean package` - build the project
