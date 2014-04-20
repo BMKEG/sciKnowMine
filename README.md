@@ -11,6 +11,4 @@ We recommend building and running from source. This should be straightforward an
 5. If you would like to run the system immediately, use `mvn jetty:run-war` to run the project from the built war-file. We recommend deploying `target/sciKnowMine.war` file to a JavaEE web application server (Tomcat) to run the system in a production environment. 
 6. Point your browser to `http://localhost:8080/sciKnowMine` to see the following screenshot. 
 
-Running This generates the following screenshot:
-
 ![](docs/topScreenShot.jpg)
