@@ -1,0 +1,5 @@
+/_site/*
+.project
+.history
+.classpath
+.DS_Store

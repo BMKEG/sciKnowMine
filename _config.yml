@@ -1,0 +1,6 @@
+name: SciKnowMine Technical Pages
+markdown: redcarpet
+pygments: true
+kramdown:
+  input: GFM
+
