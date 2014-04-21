@@ -21,9 +21,9 @@ Pre-Installation Requirements
 ** http://wiki.swftools.org/wiki/Installation
 
 The Server:
-  - Must own a port number to process http requests from client web browsers.
-  - Must be able to send http requests to http://eutils.ncbi.nlm.nih.gov (PubMed's eCitation services).
-  - Must be able to login to MySql with a user defined login with privileges to create (and destroy) databases.
+* Must own a port number to process http requests from client web browsers.
+* Must be able to send http requests to http://eutils.ncbi.nlm.nih.gov (PubMed's eCitation services).
+* Must be able to login to MySql with a user defined login with privileges to create (and destroy) databases.
 
 Installation
 ------------
