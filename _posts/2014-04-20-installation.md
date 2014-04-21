@@ -31,7 +31,7 @@ Installation
 This system is provided as a `\*.tar.gz` archive for Unix and Linux systems, 
 a `\*.dmg` instalallable for Macs and an `\*.exe` installable for PCs.
 
-All packages are available for download from [Amazon Web Services](http://bmkeg2.s3-website-us-west-2.amazonaws.com/sciknowmine.html)
+All packages are available for download from [Amazon Web Services](http://bmkeg2.s3-website-us-west-2.amazonaws.com/sciKnowMine.html)
 
 ### Setting up the swfTools directory
 
