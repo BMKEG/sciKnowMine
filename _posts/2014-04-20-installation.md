@@ -31,7 +31,9 @@ Installation
 This system is provided as a `\*.tar.gz` archive for Unix and Linux systems, 
 a `\*.dmg` instalallable for Macs and an `\*.exe` installable for PCs.
 
-All packages are available for download from [Amazon Web Services](http://bmkeg2.s3-website-us-west-2.amazonaws.com/sciKnowMine.html)
+* Mac: [skmTriage\_macos\_1\_1\_5\-SNAPSHOT.dmg](http://bmkeg2.s3-website-us-west-2.amazonaws.com/000_sciknowmine/skmTriage_macos_1_1_5-SNAPSHOT.dmg)
+* Unix: [skmTriage\_unix\_1\_1\_5\-SNAPSHOT.tar.gz](http://bmkeg2.s3-website-us-west-2.amazonaws.com/000_sciknowmine/skmTriage_unix_1_1_5-SNAPSHOT.tar.gz)
+* Windows: [skmTriage\_windows\-x64\_1\_1\_5-SNAPSHOT.exe](http://bmkeg2.s3-website-us-west-2.amazonaws.com/000_sciknowmine/skmTriage_windows-x64_1_1_5-SNAPSHOT.exe)
 
 ### Setting up the swfTools directory
 
