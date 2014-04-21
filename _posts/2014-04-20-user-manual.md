@@ -1,7 +1,3 @@
----
-date:   2014-04-20 20:06:00
----
-
 The SciKnowMine Triage Application
 ==================================
 
