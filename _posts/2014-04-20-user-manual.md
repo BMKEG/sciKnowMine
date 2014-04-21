@@ -6,27 +6,6 @@ layout: default
 
 *Note that this system is provided with no warranty or guarantee* 
 
-Pre-Installation Requirements 
-----------------
-
-* MySQL 5.1 (http://www.mysql.com/)
-** http://dev.mysql.com/downloads/mysql/5.1.html
-* SwfTools (http://www.swftools.org/)
-** http://wiki.swftools.org/wiki/Installation
-
-The Server:
-  - Must own a port number to process http requests from client web browsers.
-  - Must be able to send http requests to http://eutils.ncbi.nlm.nih.gov (PubMed's eCitation services).
-  - Must be able to login to MySql with a user defined login with privileges to create (and destroy) databases.
-
-Installation
-------------
-
-This system is provided as a `\*.tar.gz` archive for Unix and Linux systems, 
-a `\*.dmg` instalallable for Macs and an `\*.exe` installable for PCs.
-
-All packages are available for download from http://bmkeg.s3-website-us-west-2.amazonaws.com/index.html#triage
-
 Organizion of the Triage System
 -------------------------------
 
@@ -102,7 +81,7 @@ the database as a whole.
 
 ```
 editArticleCorpus -name "GO" -desc "Gene Ontology" -owner "Rocky" -regex "G" 
-                  -db <name-of-database> -l <login> -p <password> 
+                  -db <name-of-database> -l <login> -p <password> -wd <workingDir>
                   
 Arguments:  -db DBNAME -desc DESCRIPTION -l LOGIN -name NAME -owner OWNER -p PASSWD [-regex REGEX]
 
@@ -114,6 +93,7 @@ Arguments:  -db DBNAME -desc DESCRIPTION -l LOGIN -name NAME -owner OWNER -p PAS
  -name NAME        : Corpus name
  -owner OWNER      : Corpus owner
  -p PASSWD         : Database password
+ -wd WORKINGDIR    : Working Directory  
  -regex REGEX      : Regular expression to recognize incoming files                  
 ``` 
 
@@ -132,7 +112,7 @@ The following example would create a triage corpus named 'curator1', owned by a 
 
 ```
 editTriageCorpus -name "curator1" -desc "Curator 1's triage corpus" -owner "Curator 1"
-                  -db <name-of-database> -l <login> -p <password> 
+                  -db <name-of-database> -l <login> -p <password> -wd <workingDirectory>
 
 Arguments:  -db DBNAME -desc DESCRIPTION -l LOGIN -name NAME -owner OWNER -p PASSWD
 
@@ -144,7 +124,7 @@ Arguments:  -db DBNAME -desc DESCRIPTION -l LOGIN -name NAME -owner OWNER -p PAS
  -name NAME        : Corpus name
  -owner OWNER      : Corpus owner
  -p PASSWD         : Database password
-                  
+ -wd WORKINGDIR    : Working Directory               
 ``` 
 
 ### Loading Articles into a Triage Corpus 
@@ -153,7 +133,7 @@ The crucial task of loading files into a triage corpus is performed by the follo
 
 ```
 buildTriageCorpusFromPdfDir -pdfs </complete/path/to/pdf/directory> -corpus "<triage-corpus-name>"
-                  -db <name-of-database> -l <login> -p <password> 
+                  -db <name-of-database> -l <login> -p <password> -wd <workingDirectory>
                   
 Arguments:  [-codeList CODES] -corpus CORPUS -db DBNAME -l LOGIN -p PASSWD -pdfs PDF-DIR-OR-FILE [-rules FILE]
 
@@ -166,6 +146,7 @@ Arguments:  [-codeList CODES] -corpus CORPUS -db DBNAME -l LOGIN -p PASSWD -pdfs
  -p PASSWD             : Database password
  -pdfs PDF-DIR-OR-FILE : Pdfs directory or file
  -rules FILE           : Rules file
+ -wd WORKINGDIR        : Working Directory  
 ``` 
 
 This will run through all files in the targeted directory and load them into the named triage corpus. Note 
@@ -185,12 +166,13 @@ Before we can use the classifiers, we need to train them. This is done by the fo
 
 ```
 triageDocumentsClassifier -train -targetCorpus "GO" [-homeDir /path/to/directory/for/model] 
-                  -db <name-of-database> -l <login> -p <password> 
+                  -db <name-of-database> -l <login> -p <password> -wd <workingDirectory>
                   
  -db DBNAME         : Database name
  -homeDir DIR       : Directory where application data will be persisted
  -l LOGIN           : Database login
  -p PASSWD          : Database password
+ -wd WORKINGDIR     : Working Directory  
  -targetCorpus NAME : The target corpus that we're linking to
  -train             : If present will train and generate model, if absent will
                       compute and update prediction scores in Triage Document.
@@ -210,12 +192,13 @@ Applying the classifier is accomplished with the following command:
 
 ```
 triageDocumentsClassifier -predict -targetCorpus "GO" [-homeDir /path/to/directory/for/model] 
-                  -db <name-of-database> -l <login> -p <password> 
+                  -db <name-of-database> -l <login> -p <password> -wd <workingDirectory>
                   
  -db DBNAME         : Database name
  -homeDir DIR       : Directory where application data will be persisted
  -l LOGIN           : Database login
  -p PASSWD          : Database password
+ -wd WORKINGDIR     : Working Directory  
  -targetCorpus NAME : The target corpus that we're linking to
  -predict           : If present will compute and update prediction scores in
                       Triage Document. Either -train or -predict should be
@@ -230,22 +213,3 @@ This runs through all the example data from all the triage corpora where the in-
 either `in` or `out` and trains an SVM classifier (derived from a baseline set of features). There is an
 option argument for where the model should be placed, if this is not set then the model will be saved in 
 the home directory of the user running the command. 
-
-Starting the Triage Web Application Server
-------------------------------------------
-```
-triageServer  -db <name-of-database> -l <login> -p <password>
-``` 
-
-This should start the web server so that the curators can access the display.
-
-Accessing the Triage Web App
-----------------------------
-
-Navigate in a browser to:  `http://localhost:8080/triage` 
-
-Stopping the Triage Web App Server
-----------------------------------
-
-Currently you should just kill the job that was started with the triageServer command. 
-
