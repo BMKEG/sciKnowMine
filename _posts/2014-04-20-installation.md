@@ -1,10 +1,16 @@
 ---
-title: The SciKnowMine Triage Application
-description:  We present here a user manual for running and maintaining a web-based system for peforming document triage given a corpus of PDF files. We will describe processes for installation, execution and maintenance of the system. 
+title: Installing Command-Line SciKnowMine Tools 
+description:  Instructions for installing the SciKnowMine system.
 layout: default
 ---
 
 *Note that this system is provided with no warranty or guarantee* 
+
+The SciKnowMine system permits two modes of use: (A) using 
+*command-line tools to administer the server, and upload/process scientific articles into corpora* and 
+(B) use the *web interface to assign articles to specific corpora*. 
+
+Here we describe installation instructions for the *command line tools* 
 
 Pre-Installation Requirements 
 ----------------
@@ -25,39 +31,7 @@ Installation
 This system is provided as a `\*.tar.gz` archive for Unix and Linux systems, 
 a `\*.dmg` instalallable for Macs and an `\*.exe` installable for PCs.
 
-All packages are available for download from http://bmkeg.s3-website-us-west-2.amazonaws.com/index.html#triage
-
-Organizion of the Triage System
--------------------------------
-
-The triage task is primarily concerned with sorting documents from an input document set assigned to 
-a curator (called a '*triage corpus*') into a set of categories (where each category actually designates 
-a set of documents that are each called a '*target corpus*'). The data that assigns each scientific article
-from triage corpus to it's target corpus is it's '*in-out-code*' which can be one of three values: '*in*', '*out*' 
-or '*unclassified*'. 
-
-This simple construct forms the basis of the system and provides a relatively 
-straightforward way to attach additional cues and information about each article's possible inclusion in
-a target corpus based on NLP analysis of the document's contents. 
-
-### The format of PDF file names.
-
-Each PDF file being processed should start with it's pubmed id, followed by an underscore and a single letter 
-denoting if it is to be included in a target corpus. Thus some examples of possible filenames are as follows:
-
-* 19763139_A.pdf
-* 19911007_AG.pdf
-* 21470346.pdf
-
-This indicates that the article with the PubMed id 19763139 is a member of the target corpus denoted by the
-code 'A'. These codes are set when you create the target corpus. 
-
-Using the Triage System
------------------------
-
-Once installed, the system permits two modes of use: (A) using 
-*command-line tools to administer the server, and upload/process scientific articles into corpora* and 
-(B) use the *web interface to assign articles to specific corpora*. 
+All packages are available for download from [Amazon Web Services](http://bmkeg2.s3-website-us-west-2.amazonaws.com/sciknowmine.html)
 
 ### Setting up the swfTools directory
 
@@ -230,6 +204,24 @@ This runs through all the example data from all the triage corpora where the in-
 either `in` or `out` and trains an SVM classifier (derived from a baseline set of features). There is an
 option argument for where the model should be placed, if this is not set then the model will be saved in 
 the home directory of the user running the command. 
+
+# Installing and running the command line tools from source
+
+The command line tools are implemented within the `https://github.com/BMKEG/skmTriage` 
+library. 
+
+```
+1. git clone https://github.com/BMKEG/skmTriage
+2. cd skmTriage
+3. mvn -DskipTests assembly:assembly 
+	# This builds the assembled library from all dependencies,
+	# but skips unit tests within the code that could take a lot of time to run 
+4. Running the command lines tools follows exactly the same logic as described above, 
+   but requires each command to be issued using java directly based on: 
+   $ java -jar target/skmTriage-1.1.5-SNAPSHOT-jar-with-dependencies.jar 
+     [path.to.executable] [command.options]   
+```
+
 
 Starting the Triage Web Application Server
 ------------------------------------------
