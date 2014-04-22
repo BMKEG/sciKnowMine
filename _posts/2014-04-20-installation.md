@@ -2,7 +2,6 @@
 title: Installing Command-Line SciKnowMine Tools 
 description:  Instructions for installing the SciKnowMine system.
 layout: default
-parent: index.html
 ---
 
 *Note that this system is provided with no warranty or guarantee* 

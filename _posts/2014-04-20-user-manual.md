@@ -2,7 +2,6 @@
 title: The SciKnowMine Triage Application
 description:  We present here a user manual for running and maintaining a web-based system for peforming document triage given a corpus of PDF files. We will describe processes for installation, execution and maintenance of the system. 
 layout: default
-parent: index.html
 ---
 Organization of the Triage System
 -------------------------------
