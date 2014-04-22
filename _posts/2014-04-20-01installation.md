@@ -2,8 +2,8 @@
 title: Installing Command-Line SciKnowMine Tools 
 description:  Instructions for installing the SciKnowMine system.
 layout: default
-prev: installation.html
-next: user-manual.html
+prevPage: 01installation.html
+nextPage: 02organization.html
 ---
 
 *Note that this system is provided with no warranty or guarantee* 
