@@ -2,6 +2,7 @@
 title: Installing Command-Line SciKnowMine Tools 
 description:  Instructions for installing the SciKnowMine system.
 layout: default
+parent: index.html
 ---
 
 *Note that this system is provided with no warranty or guarantee* 
@@ -28,7 +29,7 @@ The Server:
 Installation
 ------------
 
-# Installing and running the command line tools from prebuilt binaries.
+### Installing and running the command line tools from prebuilt binaries.
 
 This system is provided as a `\*.tar.gz` archive for Unix and Linux systems, 
 a `\*.dmg` instalallable for Macs and an `\*.exe` installable for PCs.
@@ -37,7 +38,7 @@ a `\*.dmg` instalallable for Macs and an `\*.exe` installable for PCs.
 * Unix: [skmTriage\_unix\_1\_1\_5\-SNAPSHOT.tar.gz](http://bmkeg2.s3-website-us-west-2.amazonaws.com/000_sciknowmine/skmTriage_unix_1_1_5-SNAPSHOT.tar.gz)
 * Windows: [skmTriage\_windows\-x64\_1\_1\_5-SNAPSHOT.exe](http://bmkeg2.s3-website-us-west-2.amazonaws.com/000_sciknowmine/skmTriage_windows-x64_1_1_5-SNAPSHOT.exe)
 
-# Installing and running the command line tools from source
+### Installing and running the command line tools from source
 
 The command line tools are implemented within the `https://github.com/BMKEG/skmTriage` 
 library. 
