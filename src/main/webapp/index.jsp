@@ -7,52 +7,53 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<c:url value="/images/favicon.ico" var="iconImage" />
-<c:url value="/style/default.css" var="default_css" />
-
 <c:url value="/index.jsp" var="index" />
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>SciKnowMine: A Web Application to Support Knowledge
+<title>The SciKnowMine System: Knowledge
 	Mining from the Scientific Literature</title>
-<link rel="shortcut icon" href="${iconImage}" type="image/x-icon" />
-<link href="${default_css}" rel="stylesheet" />
+	
+<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+<link href="stylesheets/styles.css" rel="stylesheet" />
+<link href="stylesheets/pygment_trac.css" rel="stylesheet" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
 </head>
 
 <body>
 
-	<div id="outer">
+	<div class="wrapper">
 
-		<jsp:include page="WEB-INF/view/includes/header.jspx" />
-		<jsp:include page="WEB-INF/view/includes/navigation.jspx" />
+		<header>
 
-		<div id="main_content">
-
-			<p>Welcome to SciKnowMine, a text mining architecture for
-				scientific knowledge.</p>
-
+			<h1>The SciKnowMine System.</h1>
+				
 			<p>
-				A long-standing promise of Biomedical Natural Language Processing is
-				to accelerate the process of literature-based
+				Biomedical Natural Language Processing promises to accelerate
+				the process of literature-based
 				&lsquo;biocuration&rsquo;, where published information must be
-				carefully and appropriately translated into the knowledge
-				architecture of a biomedical database. Typically, biocuration is a
-				manual activity, performed by specialists with expertise in both
-				biomedicine and the computational representation of the target
-				database. <a
-					href="http://www.ploscompbiol.org/article/info%3Adoi%2F10.1371%2Fjournal.pcbi.0020142">The
-					process of biocuration is considered by some to be a vital
-					lynch-pin of biomedical informatics.</a>
+				carefully and appropriately translated into biomedical databases. 
+				SciKnowMine provides a framework for the delivery of text-mining 
+				capabilities to biocurators directly. 
 			</p>
+
+			<jsp:include page="WEB-INF/view/includes/navigation.jspx" />
+
+		</header>
+		
+		<section>	
+			<h1>Document Classification and Triage</h1>
 			<p>
-				Although, we are interested in understanding the biocuration process
-				as a whole, a key (and possibly more tractable) step is the initial
-				<em>triage</em> of documents as being of interest or not (similar to
-				the medical triage process where patients are classified as being of
-				&#39;immediate interest&#39;, i.e. needing quick medical attention).
+				A key step for biocuration is identifying which documents are of interest
+				and which are not. Within this system, we use document classification 
+				to <em>triage</em> documents (similar to
+				the medical triage process where patients are classified based on 
+				their need for quick medical attention).
 				This step sorts the documents so that specialists only need focus on
 				the documents appropriate for them.
 			</p>
@@ -65,22 +66,11 @@
 					href="http://www.informatics.jax.org/">Mouse Genome Informatics</a>
 				project. 
 			</p>
-			<!-- <p>You will soon be dead. Life will sometimes seem long and
-				tough, and 'God it's tiring' and you will sometimes be happy and
-				sometimes sad; and then you'll be old; and then you'll be dead.
-				There is only one sensible thing to do with this empty existence and
-				that is 'Fill It!' (not filet, 'fill'. 'it'.) and in my opinion,
-				until I change it, life is best filled by learning as much as you
-				can about as much as you can, taking pride in whatever you're doing,
-				having compassion, sharing ideas, RUNNING, being enthusiastic... and
-				then there's love and travel and wine and sex and art and kids and
-				giving and mountain climbing... but you know all that stuff already.
-				It's an incredibly exciting thing, this one, meaningless, life of
-				yours. Good luck and thank you for indulging me.</p>-->
-
-		</div>
-
-		<jsp:include page="WEB-INF/view/includes/footer.jspx" />
+		</section>
+		<footer>
+		<p><small>The SciKnowMine System is the first released component of the <b>SciKnowSoft</b> toolset</small></p>
+        <p><img src="images/SciKnowSoft_Panel.jpg"/></p>
+		</footer>
 
 	</div>
 
