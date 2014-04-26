@@ -1,7 +1,7 @@
 Installation Instructions
 ===
 
-We recommend building and running from source. This should be straightforward and is the most functional in terms of troubleshooting and bug-fixing. User manuals can be found at [](http://bmkeg.github.io/sciKnowMine]
+We recommend building and running from source. This should be straightforward and is the most functional in terms of troubleshooting and bug-fixing. User manuals can be found at http://bmkeg.github.io/sciKnowMine
 
 1. Clone the `bmkeg-parent` project from github to set all the dependency versions and repositories: 
 	* `mvn clone https://github.com/BMKEG/bmkeg-parent`  
