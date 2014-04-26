@@ -13,10 +13,9 @@
 		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 
 	<sec:http auto-config="true">
-		<!-- Adding Password Protection
+		<!-- Adding Password Protection -->		
 		<sec:intercept-url pattern="/**" access="ROLE_USER" /> 
-		-->
-		<sec:intercept-url pattern="/**" access="ROLE_ANONYMOUS" />
+		<!-- <sec:intercept-url pattern="/**" access="ROLE_ANONYMOUS" /> -->
 	</sec:http>
 
 	<!--<sec:authentication-manager alias="authenticationManager"> 

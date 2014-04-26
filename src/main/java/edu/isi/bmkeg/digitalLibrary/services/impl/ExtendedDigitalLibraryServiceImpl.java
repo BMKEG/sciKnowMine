@@ -784,6 +784,9 @@ public class ExtendedDigitalLibraryServiceImpl implements
 			FTD ftd = this.extDigLibDao.getCoreDao().findByIdInTrans(
 					lvi.getVpdmfId(), new FTD(), "ArticleDocument");
 
+			//if( ftd.getPmcLoaded() )
+			//	continue;
+			
 			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			// Get ready to run update query on this view.
 			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

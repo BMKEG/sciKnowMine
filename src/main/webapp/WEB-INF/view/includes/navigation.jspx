@@ -8,9 +8,9 @@
 	<c:url value="http://www.isi.edu/projects/sciknowmine/overview" var="isi" />
 
     <ul>
-        <li><a href="${index}"><strong>Starting</strong>point</a></li>
         <li><a href="${skm}"><strong>Run</strong>the system</a></li>
         <li><a href="${docs}"><strong>Manual</strong>instructions</a></li>
+        <li><a href="${github}"><strong>Source</strong>code</a></li>
     </ul>
 
 </div>
