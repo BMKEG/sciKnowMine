@@ -3,7 +3,7 @@ title: The SciKnowMine Triage Application
 description:  We present here a user manual for running and maintaining a web-based system for peforming document triage given a corpus of PDF files. We will describe processes for installation, execution and maintenance of the system. 
 layout: defaultTOC
 prevPage: 06deletingData.html
-nextPage: 07machineLearning.html
+nextPage: 08runningExperiments.html
 ---
 
 Command Line Tools - Using Machine learning classifiers
