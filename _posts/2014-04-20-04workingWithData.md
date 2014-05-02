@@ -6,8 +6,8 @@ prevPage: 03setUp.html
 nextPage: 05reportingFunctions.html
 ---
 
-Command Line Tools - Working with data
------------------------
+4. Command Line Tools - Working with data
+---
 
 ### Creating a Target Corpora 
 

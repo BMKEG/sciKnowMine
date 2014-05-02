@@ -5,7 +5,7 @@ layout: defaultTOC
 prevPage: 05reportingFunctions.html
 nextPage: 07machineLearning.html
 ---
-Command Line Tools - Deleting data 
+6. Command Line Tools - Deleting data 
 ----------------
 
 We have three commands to edit data from the system

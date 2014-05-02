@@ -6,7 +6,7 @@ prevPage: 06deletingData.html
 nextPage: 08runningExperiments.html
 ---
 
-Command Line Tools - Using Machine learning classifiers
+7. Command Line Tools - Using Machine learning classifiers
 ---
 
 Before we can use the classifiers, we need to train them. This is done by the following command:

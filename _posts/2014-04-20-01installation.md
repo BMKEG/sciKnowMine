@@ -1,10 +1,13 @@
 ---
-title: Installing Command-Line SciKnowMine Tools 
+title: The SciKnowMine Triage Application
 description:  Instructions for installing the SciKnowMine system.
-layout: default
+layout: defaultTOC
 prevPage: 01installation.html
 nextPage: 02organization.html
 ---
+
+1. Installation Manual
+===
 
 *Note that this system is provided with no warranty or guarantee* 
 

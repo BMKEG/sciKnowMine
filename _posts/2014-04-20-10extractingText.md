@@ -6,7 +6,7 @@ prevPage: 09webApp.html
 nextPage: 11triage.html
 ---
 
-Web Application - Extracting text using LAPDF-Text
+10. Web Application - Extracting text using LAPDF-Text
 ---
 
 We have described the underlying methodology of our PDF-text extraction system in 

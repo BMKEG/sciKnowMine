@@ -6,14 +6,8 @@ prevPage: 01installation.html
 nextPage: 03setUp.html
 ---
 
-We present here a user manual for running and maintaining a web-based system for peforming document
-triage given a corpus of PDF files. We will describe processes for installation, execution and maintenance 
-of the system. 
-
-**Note that this system is provided with no warranty or guarantee**
-
-Organization of the Triage System
--------------------------------
+2. System Organization 
+---
 
 The triage task is primarily concerned with sorting documents from an input document set assigned to 
 a curator (called a '*triage corpus*') into a set of categories (where each category actually designates 

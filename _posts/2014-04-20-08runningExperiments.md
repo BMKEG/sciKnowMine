@@ -6,7 +6,7 @@ prevPage: 07machineLearning.html
 nextPage: 09webApp.html
 ---
 
-Command Line Tools - Running Experiments
+8. ommand Line Tools - Running Experiments
 ---
 
 We designed the system to permit developers to run machine learning natural language 

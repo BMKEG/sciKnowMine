@@ -6,7 +6,7 @@ prevPage: 04workingWithData.html
 nextPage: 06deletingData.html
 ---
 
-Command Line Tools - Reporting functions
+5. Command Line Tools - Reporting functions
 ---------
 
 The system has three query command line functions for an administrator to query the state of the system from the command line.
