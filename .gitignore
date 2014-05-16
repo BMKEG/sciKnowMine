@@ -1,4 +1,8 @@
+.DS_Store
+.history
 /target
 /.project
 /.classpath
 /.settings
+_posts
+_site
