@@ -22,6 +22,7 @@ deleteTriageCorpus -db DBNAME -l LOGIN -p PASSWD -targetCorpus TARGET
 ```
 
 The *deleteTriageCorpus* will remove all traces of a given triage corpus from the system. 
+
 ```
 deleteTriageCorpus -db DBNAME -l LOGIN -p PASSWD -targetCorpus TARGET
 
@@ -32,6 +33,7 @@ deleteTriageCorpus -db DBNAME -l LOGIN -p PASSWD -targetCorpus TARGET
 ```
 
 The *deleteTriageScoresBasedOnCodefile* uses a code file (a list of formatted pmid_A.pdf file names) to remove paper's association with a given triage corpus. 
+
 ```
 deleteTriageScoresBasedOnCodefile -codeList CODES -db DBNAME -l LOGIN -p PASSWD -triageCorpus CORPUS
 

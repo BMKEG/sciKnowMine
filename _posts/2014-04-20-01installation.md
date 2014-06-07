@@ -21,11 +21,12 @@ Pre-Installation Requirements
 ----------------
 
 * MySQL 5.1 (http://www.mysql.com/)
-** http://dev.mysql.com/downloads/mysql/5.1.html
+	* http://dev.mysql.com/downloads/mysql/5.1.html
 * SwfTools (http://www.swftools.org/)
-** http://wiki.swftools.org/wiki/Installation
+	* http://wiki.swftools.org/wiki/Installation
 
 The Server:
+
 * Must own a port number to process http requests from client web browsers.
 * Must be able to send http requests to http://eutils.ncbi.nlm.nih.gov (PubMed's eCitation services).
 * Must be able to login to MySql with a user defined login with privileges to create (and destroy) databases.
@@ -48,6 +49,9 @@ The command line tools are implemented within the `https://github.com/BMKEG/skmT
 library. 
 
 ```
+0. git clone https://github.com/BMKEG/bmkeg-parent
+	# This pulls in the dependencies for libraries 
+	# available through maven. 
 1. git clone https://github.com/BMKEG/skmTriage
 2. cd skmTriage
 3. mvn -DskipTests assembly:assembly 

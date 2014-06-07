@@ -6,7 +6,7 @@ prevPage: 07machineLearning.html
 nextPage: 09webApp.html
 ---
 
-8. ommand Line Tools - Running Experiments
+8. Command Line Tools - Running Experiments
 ---
 
 We designed the system to permit developers to run machine learning natural language 
@@ -59,7 +59,7 @@ edu.isi.bmkeg.skm.triage.cleartk.bin.PreprocessTriageScores
 This runs through the available text from each paper in the system and extracts it 
 to the named directory in the following structure:
 
-``
+```
 + directory
 |-+ <target_corpus_name> (e.g., 'Allele_Phenotype')
   |-+ <triage_corpus_name> (e.g., 'Hiroaki_Onda')
@@ -69,14 +69,14 @@ to the named directory in the following structure:
     |-+ train
       |-+ in.txt
       |-+ out.txt
-`` 
+```
 
 Each `in.txt` and `out.txt` file contains data formatted in the following way:
 
-``
+```
 88177	< > During neural development , programmed cell death ... <all-text-from-the-paper> ... the insets in i and l. 
 88302	< > Mitochondrial dysfunction has long been implicated ... <all-text-from-the-paper> ... to generate sufficient ATP . 
-`` 
+```
 
 Each line starts with the database id value for the article citation and then contains the 
 text of the article, extracted from the PDF and converted to XML through the LAPDF-Text 
